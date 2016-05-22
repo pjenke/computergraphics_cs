@@ -13,6 +13,10 @@ namespace computergraphics
 		 * */
 		Vector3 eye = new Vector3 (0, 0, -2);
 
+		public Vector3 Eye {
+			get { return eye; }
+		}
+
 		/**
 		 * Camera refernece point
 		 * */
@@ -85,6 +89,15 @@ namespace computergraphics
 			side.Normalize ();
 			up = Vector3.Cross (side, dir);
 			up.Normalize ();
+			// Update LookAt
+			LookAt = Matrix4.LookAt (eye, target, up);
+		}
+
+		public void Zoom (int factor)
+		{
+			Vector3 dir = Vector3.Subtract (target, eye);
+			eye = Vector3.Add (eye, Vector3.Multiply (dir, 0.002f * factor));
+
 			// Update LookAt
 			LookAt = Matrix4.LookAt (eye, target, up);
 		}

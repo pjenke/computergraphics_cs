@@ -14,10 +14,18 @@ namespace computergraphics
 		 * Name of file with vertex shader code
 		 * */
 		string vertexShaderFilename;
+
 		/**
 		 * Name of file with fragment shader code
 		 * */
 		string fragmentShaderFilename;
+
+		bool useTexture = false;
+
+		public bool UseTexture {
+			set { useTexture = value; }
+			get { return useTexture; }
+		}
 
 		/**
 		 * Id of the created shader program, -1 before initialization.
@@ -101,6 +109,23 @@ namespace computergraphics
 			GL.LinkProgram (shaderProgram);
 			GL.ValidateProgram (shaderProgram);
 			return shaderProgram;
+		}
+
+		public void SetCameraEyeShaderParameter(Vector3 eye)
+		{
+			int location = GL.GetUniformLocation(shaderProgramId, "camera_position");
+			float[] values = { (float)eye.X, (float)eye.Y, (float)eye.Z };
+			GL.ProgramUniform3 (shaderProgramId, location, 3, values);
+		}
+
+		public void SetUseTextureParameter(bool useTexture)
+		{
+			int location = GL.GetUniformLocation(shaderProgramId, "useTexture");
+			float[] values = { -1, -1, -1 };
+			if (useTexture) {
+				values[0] = 1;	
+			}
+			GL.ProgramUniform3(shaderProgramId, location, 3, values);
 		}
 	}
 }

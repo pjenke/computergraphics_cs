@@ -7,7 +7,7 @@ namespace computergraphics
 	/**
 	 * Triangle mesh data structure in indexed format.
 	 * */
-	public class TriangleMesh
+	public class TriangleMesh :ITriangleMesh
 	{
 		/**
 		 * List of vertices.
@@ -18,6 +18,11 @@ namespace computergraphics
 		 * List of indexed triangles.
 		 * */
 		List<Triangle> triangles = new List<Triangle> ();
+
+		/**
+		 * List of texture coordinates.
+		 * */
+		List<Vector2> textureCoordinates = new List<Vector2>();
 
 		public TriangleMesh ()
 		{
@@ -44,9 +49,19 @@ namespace computergraphics
 			return triangles.Count;
 		}
 
+		public void AddTextureCoordinate(Vector2 texCoord)
+		{
+			textureCoordinates.Add (texCoord);
+		}
+
 		public Triangle GetTriangle (int index)
 		{
 			return triangles [index];
+		}
+
+		public int GetNumberOfVertices ()
+		{
+			return vertices.Count;	
 		}
 
 		public Vector3 GetVertex (int index)
@@ -54,20 +69,34 @@ namespace computergraphics
 			return vertices [index];
 		}
 
+		public Vector2 GetTextureCoordinate(int index)
+		{
+			return textureCoordinates [index];
+		}
+
 		/**
 		 * Compute normals for all triangles.
 		 * */
-		public void ComputeNormals ()
+		public void ComputeTriangleNormals ()
 		{
 			for (int i = 0; i < GetNumberOfTriangles (); i++) {
 				Triangle t = triangles [i];
-				Vector3 a = vertices [triangles [i].a];
-				Vector3 b = vertices [triangles [i].b];
-				Vector3 c = vertices [triangles [i].c];
+				Vector3 a = vertices [triangles [i].GetVertexIndex(0)];
+				Vector3 b = vertices [triangles [i].GetVertexIndex(1)];
+				Vector3 c = vertices [triangles [i].GetVertexIndex(2)];
 				Vector3 normal = Vector3.Cross (Vector3.Subtract (b, a), Vector3.Subtract (c, a));
 				normal.Normalize ();
 				triangles [i].setNormal (normal);
 			}
+		}
+
+		/**
+		 * Clear all content.
+		 * */
+		public void Clear ()
+		{
+			vertices.Clear ();
+			triangles.Clear ();
 		}
 
 		/**
@@ -100,16 +129,7 @@ namespace computergraphics
 			AddTriangle (new Triangle (2, 6, 7));
 			AddTriangle (new Triangle (4, 1, 0));
 			AddTriangle (new Triangle (1, 4, 5));
-			ComputeNormals ();
-		}
-
-		/**
-		 * Clear all content.
-		 * */
-		public void Clear ()
-		{
-			vertices.Clear ();
-			triangles.Clear ();
+			ComputeTriangleNormals ();
 		}
 	}
 }

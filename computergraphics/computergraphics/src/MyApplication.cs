@@ -23,7 +23,6 @@ namespace computergraphics
 			Scene scene = new Scene ();
 			Nullable<MouseState> previous = null;
 
-			bool mouseDown = false;
 			bool isInit = true;
 		
 			using (var game = new GameWindow ()) {
@@ -50,27 +49,25 @@ namespace computergraphics
 				// Mouse move
 				game.MouseMove += (sender, e) => {
 					var mouse = Mouse.GetState ();
-					if (mouseDown && previous != null) {
-						var deltaX = (mouse.X - previous.Value.X) / 200.0f;
-						var deltaY = (mouse.Y - previous.Value.Y) / 200.0f;
-						scene.RotateCamera (deltaX, deltaY);
+					if (mouse [MouseButton.Left]) {
+						if (previous != null) {
+							var deltaX = (mouse.X - previous.Value.X) / 200.0f;
+							var deltaY = (mouse.Y - previous.Value.Y) / 200.0f;
+							scene.RotateCamera (deltaX, deltaY);
+						}
+					} else if (mouse [MouseButton.Middle]) {
+						if (previous != null) {
+							var deltaY = (mouse.Y - previous.Value.Y);
+							scene.Zoom (deltaY);
+						}
 					}
 					previous = mouse;
-				};
-
-				// Mouse down
-				game.MouseDown += (sender, e) => {
-					var mouse = Mouse.GetState ();
-					if (mouse [MouseButton.Left]) {
-						mouseDown = true;
-					}
 				};
 
 				// Mouse up
 				game.MouseUp += (sender, e) => {
 					var mouse = Mouse.GetState ();
 					if (!mouse [MouseButton.Left]) {
-						mouseDown = false;
 						previous = null;
 					}
 				};

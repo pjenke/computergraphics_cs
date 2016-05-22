@@ -9,42 +9,46 @@ namespace computergraphics
 	public class Triangle
 	{
 		/**
-		 * Index of first vertex.
+		 * Vertex indices
 		 * */
-		public int a;
+		int [] vertexIndices = {-1, -1, -1};
 
 		/**
-		 * Index of second vertex.
+		 * Texture coordinate indices.
 		 * */
-		public int b;
+		int [] texCoordIndices = {-1, -1, -1};
 
-		/**
-		 * Index of third vertex.
-		 * */
-		public int c;
 
 		/**
 		 * Triangle normal, originally uninitialized.
 		 * */
 		public Vector3 normal;
 
-		public Triangle (int a, int b, int c)
+		public Triangle (int vertexIndexA, int vertexIndexB, int vertexIndexC)
 		{
-			this.a = a;
-			this.b = b;
-			this.c = c;
+			vertexIndices[0] = vertexIndexA;
+			vertexIndices[1] = vertexIndexB;
+			vertexIndices[2] = vertexIndexC;
 		}
 
-		public int Get (int index)
+		public Triangle (int vertexIndexA, int vertexIndexB, int vertexIndexC, int texCoordIndexA, int texCoordIndexB, int texCoordIndexC)
 		{
-			switch (index) {
-			case 0:
-				return a;
-			case 1:
-				return b;
-			default:
-				return c;
-			}
+			vertexIndices[0] = vertexIndexA;
+			vertexIndices[1] = vertexIndexB;
+			vertexIndices[2] = vertexIndexC;
+			texCoordIndices [0] = texCoordIndexA;
+			texCoordIndices [1] = texCoordIndexB;
+			texCoordIndices [2] = texCoordIndexC;
+		}
+
+		public int GetVertexIndex (int index)
+		{
+			return vertexIndices [index];
+		}
+
+		public int GetTexCoordIndex (int index)
+		{
+			return texCoordIndices [index];
 		}
 
 		public void setNormal (Vector3 normal)

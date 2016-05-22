@@ -1,85 +1,54 @@
 varying vec3 N; // Normal vector
 varying vec3 p; // Surface point
+varying vec3 color; // Surface color
 uniform vec3 camera_position; // Set in Java application
-uniform float transparency; // Set in Java application
+uniform sampler2D texture; // Texture object
+varying vec2 texture_coordinate; // Texture coordinate
+uniform vec3 useTexture; 
 
 /**
  * Fragment shader: Phong shading with Phong lighting model.
  */
 void main (void)
 {
-    // Read reflection material properties from OpenGL
-    vec4 reflectionAmbient = gl_FrontMaterial.ambient;
-    vec4 reflectionDiffuse = gl_FrontMaterial.diffuse;
-    vec4 reflectionSpecular = gl_FrontMaterial.specular;
-    
-    // Determine number of active lights
-    int numberOfLights = 0;
-    for ( int i = 0; i < gl_MaxLights; i++ ){
-    	if ( gl_LightSource[i].diffuse.x > -0.1 ){
-    		numberOfLights++;
-    	}
-    }
-    
+	//vec3 surfaceColor = color;
+	vec3 surfaceColor = texture2D(texture, texture_coordinate).xyz;
+	//if (useTexture[0] > 0.0 ){
+	//	surfaceColor = texture2D(texture, texture_coordinate).xyz;
+	//}
+
+    // Set lights
+    int numberOfLights = 2;
+    vec3 lightPositions[2];
+    lightPositions[0] = vec3(5,5,5);
+    lightPositions[1] = vec3(-5,5,-5);
+
+    // Init result
     gl_FragColor = vec4(0,0,0,1);
    
    	// Ambient color
-   	vec3 ambient;
-	float ambientFactor = 0.5;
-    ambient.x = reflectionAmbient.x * ambientFactor;
-    ambient.y = reflectionAmbient.y * ambientFactor;
-    ambient.z = reflectionAmbient.z * ambientFactor;
-    gl_FragColor.xyz += ambient;
+    gl_FragColor.xyz += vec3(0.1, 0.1, 0.1);
    
     // Add diffuse and specular for each light
     for ( int i = 0; i < numberOfLights; i++ ){
-        bool isSpot = gl_LightSource[i].spotCutoff > 0.1;
-        bool isDirectionalLight = gl_LightSource[i].diffuse.w < 0.0;
-        bool isPointLight = !isSpot && !isDirectionalLight;
-        bool isActive = gl_LightSource[i].diffuse.x > -0.1;
-        
-        if ( !isActive ){
-            continue;
-        }
 
         // Point light, Spotlight
-        vec3 L = normalize(gl_LightSource[i].position.xyz - p);
-    	if ( isDirectionalLight ){
-    		L =  normalize( gl_LightSource[i].position.xyz );
-        }
+        vec3 L = normalize(lightPositions[i].xyz - p);
             
         // Diffuse
         vec3 diffuse = vec3(0,0,0);
         vec3 specular = vec3(0,0,0);
         if ( dot( N, L ) > 0.0 ){
-            diffuse.x = reflectionDiffuse.x * gl_LightSource[i].diffuse.x;
-            diffuse.y = reflectionDiffuse.y * gl_LightSource[i].diffuse.y;
-            diffuse.z = reflectionDiffuse.z * gl_LightSource[i].diffuse.z;
-            diffuse = diffuse * clamp( abs(dot( N, L )), 0.0, 1.0 );// / float(numberOfLights);
+            diffuse = surfaceColor * clamp( abs(dot( normalize(N), L )), 0.0, 1.0 );
             
             // Specular
             vec3 E = normalize( camera_position - p );
             vec3 R = normalize( reflect( L, N) );
-            
-            specular.x = reflectionSpecular.x * gl_LightSource[i].specular.x;
-            specular.y = reflectionSpecular.y * gl_LightSource[i].specular.y;
-            specular.z = reflectionSpecular.z * gl_LightSource[i].specular.z;
-            specular = specular * pow(abs(dot(R,E)), gl_FrontMaterial.shininess);// / float(numberOfLights);
+            specular = vec3(1,1,1) * pow(abs(dot(R,E)), 20.0);
         }
-        
-        if ( isSpot ){
-            float distance = dot( p, gl_LightSource[i].spotDirection) - dot(gl_LightSource[i].position.xyz, gl_LightSource[i].spotDirection);
-            bool isInSpot = dot(-L, normalize(gl_LightSource[i].spotDirection)) > cos(gl_LightSource[i].spotCutoff);
-            if ( isInSpot && distance > 0.0 ){
-                gl_FragColor.xyz += diffuse + specular;
-            }
-        } else if ( isDirectionalLight ){
-            gl_FragColor.xyz +=  diffuse + specular;
-        } else if (isPointLight ){
-            gl_FragColor.xyz += diffuse + specular;
-        }
+
+        gl_FragColor.xyz += diffuse + specular;
     }
     
     gl_FragColor = clamp( gl_FragColor, 0.0, 1.0 );
-    gl_FragColor.a = transparency;
 }

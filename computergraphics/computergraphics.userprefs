@@ -1,15 +1,6 @@
-﻿<Properties StartupItem="TestProject/computergraphics.csproj">
+﻿<Properties StartupItem="computergraphics/computergraphics.csproj">
   <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug|x86" />
-  <MonoDevelop.Ide.Workbench ActiveDocument="TestProject/MyApplication.cs">
-    <Files>
-      <File FileName="TestProject/MyApplication.cs" Line="70" Column="21" />
-      <File FileName="TestProject/Camera.cs" Line="15" Column="22" />
-      <File FileName="TestProject/TriangleMesh.cs" Line="62" Column="26" />
-      <File FileName="TestProject/Triangle.cs" Line="18" Column="4" />
-      <File FileName="TestProject/Shader.cs" Line="61" Column="4" />
-      <File FileName="TestProject/Scene.cs" Line="65" Column="57" />
-    </Files>
-  </MonoDevelop.Ide.Workbench>
+  <MonoDevelop.Ide.Workbench />
   <MonoDevelop.Ide.DebuggingService.Breakpoints>
     <BreakpointStore />
   </MonoDevelop.Ide.DebuggingService.Breakpoints>

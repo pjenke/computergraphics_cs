@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Drawing;
+using System.Drawing.Imaging;
 using OpenTK;
 using OpenTK.Graphics;
 using OpenTK.Graphics.OpenGL;
@@ -26,12 +27,21 @@ namespace computergraphics
 		 */
 		Camera camera;
 
+		/**
+		 * Scene graph root node
+		 * */
+		GroupNode rootNode = new GroupNode ();
+
 		public Scene ()
 		{
 			camera = new Camera ();
 			shader = new Shader ("../../../../assets/shader/fragment_shader_phong_shading.glsl", "../../../../assets/shader/vertex_shader_phong_shading.glsl");
 			mesh = new TriangleMesh ();
 			mesh.CreateCube ();
+			ObjReader reader = new ObjReader ();
+			reader.read (mesh, "../../../../assets/meshes/cube.obj");
+			TriangleMeshNode meshNode = new TriangleMeshNode (mesh);
+			getRootNode ().Add (meshNode);
 		}
 
 		/**
@@ -39,6 +49,7 @@ namespace computergraphics
 		 * */
 		public void Init ()
 		{
+			// Setup shader
 			shader.CompileAndLink ();
 			shader.Use ();
 		}
@@ -48,16 +59,9 @@ namespace computergraphics
 		 * */
 		public void Draw ()
 		{
-			GL.Begin (PrimitiveType.Triangles);
-			for (int i = 0; i < mesh.GetNumberOfTriangles (); i++) {
-				Triangle t = mesh.GetTriangle (i);
-				GL.Color3 (Color.Ivory);
-				GL.Normal3 (t.normal.X, t.normal.Y, t.normal.Z); 
-				for (int j = 0; j < 3; j++) {
-					GL.Vertex3 (mesh.GetVertex (t.Get (j)).X, mesh.GetVertex (t.Get (j)).Y, mesh.GetVertex (t.Get (j)).Z);
-				}
-			}
-			GL.End ();
+			shader.SetCameraEyeShaderParameter (camera.Eye);
+			shader.SetUseTextureParameter (true);
+			rootNode.Draw ();
 		}
 
 		/**
@@ -97,6 +101,44 @@ namespace computergraphics
 		public void RotateCamera (float angleAroundUp, float angleUpDown)
 		{
 			camera.updateLookAtMatrix (angleAroundUp, angleUpDown);
+		}
+
+		public void Zoom(int factor)
+		{
+			camera.Zoom(factor);
+		}
+
+		public GroupNode getRootNode()
+		{
+			return rootNode;
+		}
+			
+		/***
+		 * TODO
+		 * */
+		private int LoadTexture(string filename)
+		{
+			if (String.IsNullOrEmpty(filename))
+				throw new ArgumentException(filename);
+
+			int id = GL.GenTexture();
+			GL.BindTexture(TextureTarget.Texture2D, id);
+
+			// We will not upload mipmaps, so disable mipmapping (otherwise the texture will not appear).
+			// We can use GL.GenerateMipmaps() or GL.Ext.GenerateMipmaps() to create
+			// mipmaps automatically. In that case, use TextureMinFilter.LinearMipmapLinear to enable them.
+			GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.Linear);
+			GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)TextureMagFilter.Linear);
+
+			Bitmap bmp = new Bitmap(filename);
+			BitmapData bmp_data = bmp.LockBits(new Rectangle(0, 0, bmp.Width, bmp.Height), ImageLockMode.ReadOnly, System.Drawing.Imaging.PixelFormat.Format32bppArgb);
+
+			GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.Rgba, bmp_data.Width, bmp_data.Height, 0,
+				OpenTK.Graphics.OpenGL.PixelFormat.Bgra, PixelType.UnsignedByte, bmp_data.Scan0);
+
+			bmp.UnlockBits(bmp_data);
+
+			return id;
 		}
 	}
 }

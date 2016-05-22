@@ -44,6 +44,11 @@
     <Compile Include="src\Shader.cs" />
     <Compile Include="src\Triangle.cs" />
     <Compile Include="src\TriangleMesh.cs" />
+    <Compile Include="src\GroupNode.cs" />
+    <Compile Include="src\TriangleMeshNode.cs" />
+    <Compile Include="src\INode.cs" />
+    <Compile Include="src\ITriangleMesh.cs" />
+    <Compile Include="src\ObjReader.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
