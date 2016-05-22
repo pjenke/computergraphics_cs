@@ -49,6 +49,7 @@
     <Compile Include="src\INode.cs" />
     <Compile Include="src\ITriangleMesh.cs" />
     <Compile Include="src\ObjReader.cs" />
+    <Compile Include="src\Texture.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
