@@ -22,11 +22,25 @@ namespace computergraphics
 			this.filename = filename;
 		}
 
+		public bool IsLoaded()
+		{
+			return textureId >= 0;
+		}
+
 		/**
 		 * Load texture image from file and create GL texture object.
 		 * */
 		public void Load()
 		{
+			Load (filename);
+		}
+
+		/**
+		 * Load texture image from file and create GL texture object.
+		 * */
+		public void Load(string filename)
+		{
+			this.filename = filename;
 			if (String.IsNullOrEmpty(filename))
 				throw new ArgumentException(filename);
 

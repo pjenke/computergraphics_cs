@@ -24,6 +24,14 @@ namespace computergraphics
 
 		public void Draw ()
 		{
+
+			if (mesh.Tex != null) {
+				if (!mesh.Tex.IsLoaded ()) {
+					mesh.Tex.Load ();
+				}
+				mesh.Tex.Bind ();
+			}
+
 			GL.Begin (PrimitiveType.Triangles);
 			for (int i = 0; i < mesh.GetNumberOfTriangles (); i++) {
 				Triangle t = mesh.GetTriangle (i);

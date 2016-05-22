@@ -12,20 +12,36 @@ namespace computergraphics
 		/**
 		 * List of vertices.
 		 * */
-		List<Vector3> vertices = new List<Vector3> ();
+		private List<Vector3> vertices = new List<Vector3> ();
 
 		/**
 		 * List of indexed triangles.
 		 * */
-		List<Triangle> triangles = new List<Triangle> ();
+		private List<Triangle> triangles = new List<Triangle> ();
 
 		/**
 		 * List of texture coordinates.
 		 * */
-		List<Vector2> textureCoordinates = new List<Vector2>();
+		private List<Vector2> textureCoordinates = new List<Vector2>();
+
+		/**
+		 * Triangle object, null if no texture is used
+		 * */
+		private Texture texture = null;
+
+		public Texture Tex {
+			get { return texture; }
+			set { texture = value; }
+		}
 
 		public TriangleMesh ()
 		{
+			texture = null;
+		}
+
+		public TriangleMesh (string textureFilename)
+		{
+			texture = new Texture (textureFilename);
 		}
 
 		public void AddVertex (Vector3 vertex)

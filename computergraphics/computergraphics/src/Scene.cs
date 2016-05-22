@@ -17,11 +17,6 @@ namespace computergraphics
 		Shader shader;
 
 		/**
-		 * Displayed mesh
-		 * */
-		TriangleMesh mesh;
-
-		/**
 		 * Virtual camera 
 		 */
 		Camera camera;
@@ -31,19 +26,30 @@ namespace computergraphics
 		 * */
 		GroupNode rootNode = new GroupNode ();
 
-		private Texture texture;
+
 
 		public Scene ()
 		{
 			camera = new Camera ();
-			shader = new Shader ("../../../../assets/shader/fragment_shader_phong_shading.glsl", "../../../../assets/shader/vertex_shader_phong_shading.glsl");
-			mesh = new TriangleMesh ();
-			mesh.CreateCube ();
-			ObjReader reader = new ObjReader ();
-			reader.read (mesh, "../../../../assets/meshes/cube.obj");
-			TriangleMeshNode meshNode = new TriangleMeshNode (mesh);
-			getRootNode ().Add (meshNode);
-			texture = new Texture ("../../../../assets/textures/lego.png");
+			shader = new Shader ("../../../../assets/shader/fragment_shader_phong.glsl", "../../../../assets/shader/vertex_shader_phong.glsl");
+
+//			Triangle mesh = new TriangleMesh ();
+//			ObjReader reader = new ObjReader ();
+//			reader.read (mesh, "../../../../assets/meshes/cube.obj");
+//			mesh.Tex = new Texture("../../../../assets/textures/lego.png");
+//			TriangleMeshNode meshNode = new TriangleMeshNode (mesh);
+//			getRootNode ().Add (meshNode);
+
+
+			TranslationNode cubeTranslation = new TranslationNode(new Vector3(0,0,1));
+			CubeNode cubeNode = new CubeNode ();
+			cubeTranslation.Add (cubeNode);
+			getRootNode ().Add (cubeTranslation);
+
+			TranslationNode sphereTranslation = new TranslationNode(new Vector3(1,0,0));
+			SphereNode sphereNode = new SphereNode (0.5f, 20);
+			sphereTranslation.Add (sphereNode);
+			getRootNode ().Add (sphereTranslation);
 		}
 
 		/**
@@ -54,8 +60,6 @@ namespace computergraphics
 			// Setup shader
 			shader.CompileAndLink ();
 			shader.Use ();
-			texture.Load ();
-			texture.Bind ();
 		}
 
 		/**

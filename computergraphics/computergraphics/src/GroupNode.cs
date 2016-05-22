@@ -14,7 +14,7 @@ namespace computergraphics
 		{
 		}
 			
-		public void Draw(){
+		public virtual void Draw(){
 			foreach (INode child in children ){
 				child.Draw();
 			}

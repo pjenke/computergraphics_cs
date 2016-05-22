@@ -11,7 +11,7 @@ namespace computergraphics
 		/**
 		 * Eye point
 		 * */
-		Vector3 eye = new Vector3 (0, 0, -2);
+		Vector3 eye = new Vector3 (0, 0, -5);
 
 		public Vector3 Eye {
 			get { return eye; }
@@ -35,7 +35,7 @@ namespace computergraphics
 		/**
 		 * Field of view in y-direction
 		 * */
-		float fovy = 90.0f * (float)Math.PI / 180.0f;
+		float fovy = 45.0f * (float)Math.PI / 180.0f;
 
 		/**
 		 * Near clipping plane

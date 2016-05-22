@@ -50,6 +50,9 @@
     <Compile Include="src\ITriangleMesh.cs" />
     <Compile Include="src\ObjReader.cs" />
     <Compile Include="src\Texture.cs" />
+    <Compile Include="src\CubeNode.cs" />
+    <Compile Include="src\SphereNode.cs" />
+    <Compile Include="src\TranslationNode.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
