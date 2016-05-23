@@ -1,6 +1,10 @@
 ﻿<Properties StartupItem="computergraphics/computergraphics.csproj">
   <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug|x86" />
-  <MonoDevelop.Ide.Workbench />
+  <MonoDevelop.Ide.Workbench ActiveDocument="computergraphics/src/Shader.cs">
+    <Files>
+      <File FileName="computergraphics/src/Shader.cs" Line="29" Column="1" />
+    </Files>
+  </MonoDevelop.Ide.Workbench>
   <MonoDevelop.Ide.DebuggingService.Breakpoints>
     <BreakpointStore />
   </MonoDevelop.Ide.DebuggingService.Breakpoints>

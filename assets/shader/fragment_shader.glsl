@@ -1,27 +1,27 @@
 varying vec3 N; // Normal vector
 varying vec3 p; // Surface point
 varying vec3 color; // Surface color
-uniform vec3 camera_position; // Set in Java application
 uniform sampler2D texture; // Texture object
 varying vec2 texture_coordinate; // Texture coordinate
-uniform vec3 useTexture; 
+
+uniform vec3 camera_position;
+uniform int useTexture; 
 
 /**
  * Fragment shader: Phong shading with Phong lighting model.
  */
 void main (void)
 {
-	//vec3 surfaceColor = color;
-	vec3 surfaceColor = texture2D(texture, texture_coordinate).xyz;
-	//if (useTexture[0] > 0.0 ){
-	//	surfaceColor = texture2D(texture, texture_coordinate).xyz;
-	//}
+	vec3 surfaceColor = color;
+	if (useTexture > 0 ){
+		surfaceColor = texture2D(texture, texture_coordinate).xyz;
+	}
 
     // Set lights
     int numberOfLights = 2;
     vec3 lightPositions[2];
-    lightPositions[0] = vec3(5,5,5);
-    lightPositions[1] = vec3(-5,5,-5);
+    lightPositions[0] = vec3(-2,5,3);
+    lightPositions[1] = vec3(3,-2,-5);
 
     // Init result
     gl_FragColor = vec4(0,0,0,1);
@@ -38,8 +38,10 @@ void main (void)
         // Diffuse
         vec3 diffuse = vec3(0,0,0);
         vec3 specular = vec3(0,0,0);
+        float diffuseReflection = 0.9;
+        float speculatReflection = 0.9;
         if ( dot( N, L ) > 0.0 ){
-            diffuse = surfaceColor * clamp( abs(dot( normalize(N), L )), 0.0, 1.0 );
+            diffuse = surfaceColor * clamp( abs(dot( normalize(N), L )), 0.0, 1.0 ) * diffuseReflection;
             
             // Specular
             vec3 E = normalize( camera_position - p );
@@ -49,6 +51,6 @@ void main (void)
 
         gl_FragColor.xyz += diffuse + specular;
     }
-    
+
     gl_FragColor = clamp( gl_FragColor, 0.0, 1.0 );
 }

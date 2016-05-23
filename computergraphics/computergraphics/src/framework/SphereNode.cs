@@ -29,7 +29,7 @@ namespace computergraphics
 		public void Draw ()
 		{
 			GL.Begin (PrimitiveType.Triangles);
-			GL.Color4 (Color4.Aquamarine);
+			GL.Color4 (Color4.Orchid);
 			GL.Normal3 (0, 0, -1);
 
 			float dTheta = (float)(Math.PI / resolution);
@@ -60,6 +60,10 @@ namespace computergraphics
 			float y = (float)(radius * Math.Sin (theta) * Math.Sin (phi));
 			float z = (float)(radius * Math.Cos (theta));
 			return new Vector3 (x, y, z);
+		}
+
+		public void TimerTick ()
+		{
 		}
 	}
 }

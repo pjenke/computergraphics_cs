@@ -38,24 +38,26 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="src\Camera.cs" />
-    <Compile Include="src\MyApplication.cs" />
-    <Compile Include="src\Scene.cs" />
-    <Compile Include="src\Shader.cs" />
-    <Compile Include="src\Triangle.cs" />
-    <Compile Include="src\TriangleMesh.cs" />
-    <Compile Include="src\GroupNode.cs" />
-    <Compile Include="src\TriangleMeshNode.cs" />
-    <Compile Include="src\INode.cs" />
-    <Compile Include="src\ITriangleMesh.cs" />
-    <Compile Include="src\ObjReader.cs" />
-    <Compile Include="src\Texture.cs" />
-    <Compile Include="src\CubeNode.cs" />
-    <Compile Include="src\SphereNode.cs" />
-    <Compile Include="src\TranslationNode.cs" />
+    <Compile Include="src\framework\AssetPath.cs" />
+    <Compile Include="src\framework\Camera.cs" />
+    <Compile Include="src\framework\CubeNode.cs" />
+    <Compile Include="src\framework\GroupNode.cs" />
+    <Compile Include="src\framework\INode.cs" />
+    <Compile Include="src\framework\ITriangleMesh.cs" />
+    <Compile Include="src\framework\MyApplication.cs" />
+    <Compile Include="src\framework\ObjReader.cs" />
+    <Compile Include="src\framework\Scene.cs" />
+    <Compile Include="src\framework\Shader.cs" />
+    <Compile Include="src\framework\SphereNode.cs" />
+    <Compile Include="src\framework\Texture.cs" />
+    <Compile Include="src\framework\TranslationNode.cs" />
+    <Compile Include="src\framework\Triangle.cs" />
+    <Compile Include="src\framework\TriangleMesh.cs" />
+    <Compile Include="src\framework\TriangleMeshNode.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
     <Folder Include="src\" />
+    <Folder Include="src\framework\" />
   </ItemGroup>
 </Project>

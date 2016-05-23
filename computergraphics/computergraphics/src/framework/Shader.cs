@@ -13,15 +13,28 @@ namespace computergraphics
 		/**
 		 * Name of file with vertex shader code
 		 * */
-		string vertexShaderFilename;
+		private string vertexShaderFilename;
 
 		/**
 		 * Name of file with fragment shader code
 		 * */
-		string fragmentShaderFilename;
+		private string fragmentShaderFilename;
 
-		bool useTexture = false;
+		private bool useTexture = false;
 
+		/**
+		 * Uniform parameter location in the shader program.
+		 * */
+		private int locationCameraPosition = -1;
+
+		/**
+		 * Uniform parameter location in the shader program.
+		 * */
+		private int locationUseTexture = -1;
+
+		/**
+		 * useTexture-Property
+		 * */
 		public bool UseTexture {
 			set { useTexture = value; }
 			get { return useTexture; }
@@ -32,10 +45,11 @@ namespace computergraphics
 		 * */
 		int shaderProgramId = -1;
 
-		public Shader (string fragmentShaderFilename, string vertexShaderFilename)
+		public Shader (bool useTexture)
 		{
-			this.fragmentShaderFilename = fragmentShaderFilename;
-			this.vertexShaderFilename = vertexShaderFilename;
+			this.fragmentShaderFilename = "shader/fragment_shader.glsl";
+			this.vertexShaderFilename = "shader/vertex_shader.glsl";
+			this.useTexture = useTexture;
 		}
 
 		/**
@@ -43,10 +57,10 @@ namespace computergraphics
 		 * */
 		public void CompileAndLink ()
 		{
-			int vertexShaderId = CompileShader (fragmentShaderFilename, ShaderType.FragmentShader);
-			int fragmentShaderId = CompileShader (vertexShaderFilename, ShaderType.VertexShader);
+			int fragmentShaderId = CompileShader (fragmentShaderFilename, ShaderType.FragmentShader);
+			int vertexShaderId = CompileShader (vertexShaderFilename, ShaderType.VertexShader);
 			shaderProgramId = LinkProgram (vertexShaderId, fragmentShaderId);
-			Console.WriteLine ("Shader program created (id=" + shaderProgramId + ")");
+			Console.WriteLine ("Created Shader program from vertex shader " + vertexShaderFilename + " and fragment shader " + fragmentShaderFilename);
 		}
 
 		/**
@@ -55,6 +69,9 @@ namespace computergraphics
 		public void Use ()
 		{
 			GL.UseProgram (shaderProgramId);
+			locationCameraPosition = GL.GetUniformLocation (shaderProgramId, "camera_position");
+			locationUseTexture = GL.GetUniformLocation (shaderProgramId, "useTexture");
+			CheckError ();
 		}
 
 		/**
@@ -95,7 +112,7 @@ namespace computergraphics
 		 * */
 		private string ReadShaderSource (string filename)
 		{
-			return System.IO.File.ReadAllText (filename);
+			return System.IO.File.ReadAllText (AssetPath.getPathToAsset (filename));
 		}
 
 		/**
@@ -108,24 +125,36 @@ namespace computergraphics
 			GL.AttachShader (shaderProgram, fragmentShaderId);
 			GL.LinkProgram (shaderProgram);
 			GL.ValidateProgram (shaderProgram);
+			CheckError ();
 			return shaderProgram;
 		}
 
-		public void SetCameraEyeShaderParameter(Vector3 eye)
+		public void SetCameraEyeShaderParameter (Vector3 eye)
 		{
-			int location = GL.GetUniformLocation(shaderProgramId, "camera_position");
-			float[] values = { (float)eye.X, (float)eye.Y, (float)eye.Z };
-			GL.ProgramUniform3 (shaderProgramId, location, 3, values);
+			if (locationCameraPosition >= 0) {
+				GL.Uniform3 (locationCameraPosition, (float)eye.X, (float)eye.Y, (float)eye.Z);
+				CheckError ();
+			}
 		}
 
-		public void SetUseTextureParameter(bool useTexture)
+		public void SetUseTextureParameter ()
 		{
-			int location = GL.GetUniformLocation(shaderProgramId, "useTexture");
-			float[] values = { -1, -1, -1 };
-			if (useTexture) {
-				values[0] = 1;	
+			if (locationUseTexture >= 0) {
+				int value = -1;
+				if (useTexture) {
+					value = 1;	
+				}
+				GL.Uniform1 (locationUseTexture, value);
+				CheckError ();
 			}
-			GL.ProgramUniform3(shaderProgramId, location, 3, values);
+		}
+
+		private void CheckError ()
+		{
+			ErrorCode ec = GL.GetError ();
+			if (ec != 0) {
+				throw new System.Exception (ec.ToString ());
+			}
 		}
 	}
 }

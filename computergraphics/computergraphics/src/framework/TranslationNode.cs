@@ -26,6 +26,11 @@ namespace computergraphics
 			base.Draw ();
 			GL.PopMatrix ();
 		}
+
+		public override void TimerTick ()
+		{
+			base.TimerTick ();
+		}
 	}
 }
 

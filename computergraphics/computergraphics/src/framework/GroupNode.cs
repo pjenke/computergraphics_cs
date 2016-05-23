@@ -20,6 +20,10 @@ namespace computergraphics
 			}
 		}
 
+		public virtual void TimerTick()
+		{
+		}
+
 		/**
 		 * Add new child node.
 		 * */

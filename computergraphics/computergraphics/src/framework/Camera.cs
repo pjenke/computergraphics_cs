@@ -11,7 +11,7 @@ namespace computergraphics
 		/**
 		 * Eye point
 		 * */
-		Vector3 eye = new Vector3 (0, 0, -5);
+		Vector3 eye = new Vector3 (0, 0, 5);
 
 		public Vector3 Eye {
 			get { return eye; }

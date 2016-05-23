@@ -1,8 +1,10 @@
 varying vec3 N; // Normal vector
 varying vec3 p; // Surface point
 varying vec3 color; // Surface color
-uniform vec3 camera_position; // Set in Java application
 varying vec2 texture_coordinate; // Texture coordinate
+
+uniform vec3 camera_position;
+uniform int useTexture; 
 
 /**
  * Vertex shader: Phong lighting model, Phong shading.

@@ -26,7 +26,7 @@ namespace computergraphics
 			mesh.Clear ();
 
 			// Read input
-			string objSource = System.IO.File.ReadAllText (filename);
+			string objSource = System.IO.File.ReadAllText (AssetPath.getPathToAsset(filename));
 
 			string[] lines = objSource.Split ('\n');
 			foreach (String line in lines) {
@@ -43,7 +43,7 @@ namespace computergraphics
 			}
 
 			mesh.ComputeTriangleNormals ();
-			Console.WriteLine ("Read mesh from file with " + mesh.GetNumberOfTriangles () + " triangles and " + mesh.GetNumberOfVertices () + " vertices."); 
+			Console.WriteLine ("Read mesh from file " + filename + " with " + mesh.GetNumberOfTriangles () + " triangles and " + mesh.GetNumberOfVertices () + " vertices."); 
 		}
 
 		/**
@@ -86,8 +86,9 @@ namespace computergraphics
 			bool hasTextureCoordinates = false;
 			for (int i = 0; i < 3; i++) {
 				string field = tokens [i + 1];
-				vertexIndices [i] = int.Parse (field.Split ('/') [0]) - 1;
-				if (tokens.Length > 1) {
+				string[] slashSeparatedIndices = field.Split ('/');
+				vertexIndices [i] = int.Parse (slashSeparatedIndices[0]) - 1;
+				if (slashSeparatedIndices.Length > 1) {
 					texCoordIndices [i] = int.Parse (field.Split ('/') [1]) - 1;
 					hasTextureCoordinates = true;
 				}

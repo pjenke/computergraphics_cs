@@ -48,6 +48,10 @@ namespace computergraphics
 			}
 			GL.End ();
 		}
+
+		public void TimerTick ()
+		{
+		}
 	}
 }
 
