@@ -40,24 +40,32 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="src\framework\AssetPath.cs" />
     <Compile Include="src\framework\Camera.cs" />
-    <Compile Include="src\framework\CubeNode.cs" />
-    <Compile Include="src\framework\GroupNode.cs" />
-    <Compile Include="src\framework\INode.cs" />
-    <Compile Include="src\framework\ITriangleMesh.cs" />
-    <Compile Include="src\framework\MyApplication.cs" />
-    <Compile Include="src\framework\ObjReader.cs" />
     <Compile Include="src\framework\Scene.cs" />
     <Compile Include="src\framework\Shader.cs" />
-    <Compile Include="src\framework\SphereNode.cs" />
     <Compile Include="src\framework\Texture.cs" />
-    <Compile Include="src\framework\TranslationNode.cs" />
-    <Compile Include="src\framework\Triangle.cs" />
-    <Compile Include="src\framework\TriangleMesh.cs" />
-    <Compile Include="src\framework\TriangleMeshNode.cs" />
+    <Compile Include="src\framework\scenegraph\CubeNode.cs" />
+    <Compile Include="src\framework\scenegraph\GroupNode.cs" />
+    <Compile Include="src\framework\scenegraph\Node.cs" />
+    <Compile Include="src\framework\scenegraph\TranslationNode.cs" />
+    <Compile Include="src\framework\mesh\Triangle.cs" />
+    <Compile Include="src\framework\scenegraph\SphereNode.cs" />
+    <Compile Include="src\framework\mesh\Vertex.cs" />
+    <Compile Include="src\projects\TriangleMesh.cs" />
+    <Compile Include="src\framework\mesh\ObjReader.cs" />
+    <Compile Include="src\framework\scenegraph\ScaleNode.cs" />
+    <Compile Include="src\exercises\Exercise1.cs" />
+    <Compile Include="src\exercises\Application.cs" />
+    <Compile Include="src\projects\TriangleMeshNode.cs" />
+    <Compile Include="src\framework\mesh\ITriangleMesh.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
     <Folder Include="src\" />
     <Folder Include="src\framework\" />
+    <Folder Include="src\framework\math\" />
+    <Folder Include="src\framework\scenegraph\" />
+    <Folder Include="src\framework\mesh\" />
+    <Folder Include="src\exercises\" />
+    <Folder Include="src\projects\" />
   </ItemGroup>
 </Project>

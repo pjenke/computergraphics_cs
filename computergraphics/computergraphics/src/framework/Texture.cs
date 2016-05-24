@@ -8,7 +8,7 @@ using OpenTK.Graphics.OpenGL;
 namespace computergraphics
 {
 	/**
-	 * Handles an OpnGL-Texture
+	 * Handles an OpenGL-Texture
 	 * */
 	public class Texture
 	{

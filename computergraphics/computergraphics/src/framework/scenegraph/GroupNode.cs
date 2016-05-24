@@ -14,9 +14,9 @@ namespace computergraphics
 		{
 		}
 			
-		public virtual void Draw(){
+		public virtual void DrawGL(){
 			foreach (INode child in children ){
-				child.Draw();
+				child.DrawGL();
 			}
 		}
 
@@ -27,7 +27,7 @@ namespace computergraphics
 		/**
 		 * Add new child node.
 		 * */
-		public void Add(INode child)
+		public void AddChild(INode child)
 		{
 			children.Add (child);
 		}

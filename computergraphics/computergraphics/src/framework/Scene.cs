@@ -6,6 +6,7 @@ using System.Timers;
 using OpenTK;
 using OpenTK.Graphics;
 using OpenTK.Graphics.OpenGL;
+using OpenTK.Input;
 
 namespace computergraphics
 {
@@ -41,32 +42,97 @@ namespace computergraphics
 		 * */
 		private bool modelviewMatrixUpdate = true;
 
-		public Scene ()
+		public Scene (Shader.ShaderMode mode)
 		{
 			camera = new Camera ();
-			shader = new Shader (false);
+			shader = new Shader (mode);
 
 			// Timer
 			timer = new Timer (100);
 			timer.Elapsed += new ElapsedEventHandler (OnTimedEvent);
+		}
 
-			TriangleMesh mesh = new TriangleMesh ();
-			ObjReader reader = new ObjReader ();
-			reader.read (mesh, "meshes/cow.obj");
-			mesh.Tex = new Texture ("textures/lego.png");
-			TriangleMeshNode meshNode = new TriangleMeshNode (mesh);
-			getRootNode ().Add (meshNode);
+		/**
+		 * Main thread + event handlers.
+		 * */
+		[STAThread]
+		public void GameLoop()
+		{
+			Nullable<MouseState> previous = null;
 
+			bool isInit = true;
 
-//			TranslationNode cubeTranslation = new TranslationNode(new Vector3(0,0,1));
-//			CubeNode cubeNode = new CubeNode ();
-//			cubeTranslation.Add (cubeNode);
-//			getRootNode ().Add (cubeTranslation);
-//
-//			TranslationNode sphereTranslation = new TranslationNode(new Vector3(1,0,0));
-//			SphereNode sphereNode = new SphereNode (0.5f, 20);
-//			sphereTranslation.Add (sphereNode);
-//			getRootNode ().Add (sphereTranslation);
+			using (var game = new GameWindow ()) {
+				game.Load += (sender, e) => {
+					// setup settings, load textures, sounds
+					game.VSync = VSyncMode.On;
+				};
+
+				// Resize event
+				game.Resize += (sender, e) => {
+					GL.Viewport (0, 0, game.Width, game.Height);
+					Resize (game.Width, game.Height);
+				};
+
+				// Handle key events
+				game.KeyUp += (sender, e) => {
+					switch (e.Key) {
+					case Key.Escape:
+						game.Exit ();
+						break;
+					}
+				};
+
+				// Mouse move
+				game.MouseMove += (sender, e) => {
+					var mouse = Mouse.GetState ();
+					if (mouse [MouseButton.Left]) {
+						if (previous != null) {
+							var deltaX = (mouse.X - previous.Value.X) / 200.0f;
+							var deltaY = (mouse.Y - previous.Value.Y) / 200.0f;
+							RotateCamera (deltaX, deltaY);
+						}
+					} else if (mouse [MouseButton.Middle]) {
+						if (previous != null) {
+							var deltaY = (mouse.Y - previous.Value.Y);
+							Zoom (deltaY);
+						}
+					}
+					previous = mouse;
+				};
+
+				// Mouse up
+				game.MouseUp += (sender, e) => {
+					var mouse = Mouse.GetState ();
+					if (!mouse [MouseButton.Left]) {
+						previous = null;
+					}
+				};
+
+				// Rendering
+				game.RenderFrame += (sender, e) => {
+					if (isInit) {
+						GL.Enable (EnableCap.DepthTest);
+						game.Title = "computergraphics";
+						Init ();
+						isInit = false;
+						return;
+					}
+
+					// Clear
+					GL.Clear (ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
+
+					// Render scene
+					SetProjectionMatrix ();
+					SetModelViewMatrix ();
+					Draw ();
+
+					game.SwapBuffers ();
+				};
+
+				// Run the game at 60 updates per second
+				game.Run (60.0);
+			}
 		}
 
 		/**
@@ -109,7 +175,7 @@ namespace computergraphics
 		{
 			shader.SetCameraEyeShaderParameter (camera.Eye);
 			shader.SetUseTextureParameter ();
-			rootNode.Draw ();
+			rootNode.DrawGL ();
 		}
 
 		/**
@@ -163,7 +229,7 @@ namespace computergraphics
 			modelviewMatrixUpdate = true;
 		}
 
-		public GroupNode getRootNode ()
+		public GroupNode getRoot ()
 		{
 			return rootNode;
 		}

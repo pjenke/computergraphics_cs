@@ -10,6 +10,13 @@ namespace computergraphics
 	 * */
 	public class Shader
 	{
+		public enum ShaderMode
+		{
+			PHONG,
+			TEXTURE,
+			NO_LIGHTING
+		}
+
 		/**
 		 * Name of file with vertex shader code
 		 * */
@@ -20,8 +27,6 @@ namespace computergraphics
 		 * */
 		private string fragmentShaderFilename;
 
-		private bool useTexture = false;
-
 		/**
 		 * Uniform parameter location in the shader program.
 		 * */
@@ -30,14 +35,19 @@ namespace computergraphics
 		/**
 		 * Uniform parameter location in the shader program.
 		 * */
-		private int locationUseTexture = -1;
+		private int locationShaderMode = -1;
+
+		/**
+		 * Current shader mode.
+		 * */
+		private ShaderMode mode;
 
 		/**
 		 * useTexture-Property
 		 * */
-		public bool UseTexture {
-			set { useTexture = value; }
-			get { return useTexture; }
+		public ShaderMode Mode {
+			set { mode = value; }
+			get { return mode; }
 		}
 
 		/**
@@ -45,11 +55,11 @@ namespace computergraphics
 		 * */
 		int shaderProgramId = -1;
 
-		public Shader (bool useTexture)
+		public Shader (ShaderMode mode)
 		{
+			this.mode = mode;
 			this.fragmentShaderFilename = "shader/fragment_shader.glsl";
 			this.vertexShaderFilename = "shader/vertex_shader.glsl";
-			this.useTexture = useTexture;
 		}
 
 		/**
@@ -70,7 +80,7 @@ namespace computergraphics
 		{
 			GL.UseProgram (shaderProgramId);
 			locationCameraPosition = GL.GetUniformLocation (shaderProgramId, "camera_position");
-			locationUseTexture = GL.GetUniformLocation (shaderProgramId, "useTexture");
+			locationShaderMode = GL.GetUniformLocation (shaderProgramId, "shaderMode");
 			CheckError ();
 		}
 
@@ -139,14 +149,25 @@ namespace computergraphics
 
 		public void SetUseTextureParameter ()
 		{
-			if (locationUseTexture >= 0) {
-				int value = -1;
-				if (useTexture) {
-					value = 1;	
-				}
-				GL.Uniform1 (locationUseTexture, value);
-				CheckError ();
+			if (locationShaderMode < 0) {
+				return; 
 			}
+			int value = 0;
+			switch (mode) {
+			case ShaderMode.PHONG: 
+				value = 0;
+				break;
+			case ShaderMode.TEXTURE: 
+				value = 1;
+				break;
+			case ShaderMode.NO_LIGHTING: 
+				value = 2;
+				break;
+
+			}
+			GL.Uniform1 (locationShaderMode, value);
+			CheckError ();
+
 		}
 
 		private void CheckError ()

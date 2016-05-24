@@ -22,7 +22,7 @@ namespace computergraphics
 		/**
 		 * List of texture coordinates.
 		 * */
-		private List<Vector2> textureCoordinates = new List<Vector2>();
+		private List<Vector2> textureCoordinates = new List<Vector2> ();
 
 		/**
 		 * Triangle object, null if no texture is used
@@ -65,7 +65,7 @@ namespace computergraphics
 			return triangles.Count;
 		}
 
-		public void AddTextureCoordinate(Vector2 texCoord)
+		public void AddTextureCoordinate (Vector2 texCoord)
 		{
 			textureCoordinates.Add (texCoord);
 		}
@@ -85,7 +85,7 @@ namespace computergraphics
 			return vertices [index];
 		}
 
-		public Vector2 GetTextureCoordinate(int index)
+		public Vector2 GetTextureCoordinate (int index)
 		{
 			return textureCoordinates [index];
 		}
@@ -97,12 +97,12 @@ namespace computergraphics
 		{
 			for (int i = 0; i < GetNumberOfTriangles (); i++) {
 				Triangle t = triangles [i];
-				Vector3 a = vertices [triangles [i].GetVertexIndex(0)];
-				Vector3 b = vertices [triangles [i].GetVertexIndex(1)];
-				Vector3 c = vertices [triangles [i].GetVertexIndex(2)];
+				Vector3 a = vertices [triangles [i].GetVertexIndex (0)];
+				Vector3 b = vertices [triangles [i].GetVertexIndex (1)];
+				Vector3 c = vertices [triangles [i].GetVertexIndex (2)];
 				Vector3 normal = Vector3.Cross (Vector3.Subtract (b, a), Vector3.Subtract (c, a));
 				normal.Normalize ();
-				triangles [i].setNormal (normal);
+				triangles [i].normal = normal;
 			}
 		}
 

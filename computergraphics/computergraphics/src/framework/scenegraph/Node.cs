@@ -10,7 +10,7 @@ namespace computergraphics
 		/**
 		 * Render node content using OpenGL commands.
 		 * */
-		void Draw();
+		void DrawGL();
 
 		/**
 		 * This method is called at each timer tick.

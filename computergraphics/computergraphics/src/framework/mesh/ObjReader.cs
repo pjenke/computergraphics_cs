@@ -20,13 +20,13 @@ namespace computergraphics
 		/**
 		 * Read an OBJ file an create a mesh from the content.
 		 * */
-		public void read (ITriangleMesh mesh, string filename)
+		public void read (string filename, ITriangleMesh mesh)
 		{
 			this.mesh = mesh;
 			mesh.Clear ();
 
 			// Read input
-			string objSource = System.IO.File.ReadAllText (AssetPath.getPathToAsset(filename));
+			string objSource = System.IO.File.ReadAllText (AssetPath.getPathToAsset (filename));
 
 			string[] lines = objSource.Split ('\n');
 			foreach (String line in lines) {
@@ -55,8 +55,8 @@ namespace computergraphics
 				return;
 			}
 			Vector3 x = new Vector3 (float.Parse (tokens [1], System.Globalization.CultureInfo.InvariantCulture), 
-				float.Parse (tokens [2], System.Globalization.CultureInfo.InvariantCulture), 
-				float.Parse (tokens [3], System.Globalization.CultureInfo.InvariantCulture));
+				            float.Parse (tokens [2], System.Globalization.CultureInfo.InvariantCulture), 
+				            float.Parse (tokens [3], System.Globalization.CultureInfo.InvariantCulture));
 			mesh.AddVertex (x);
 		}
 
@@ -69,7 +69,7 @@ namespace computergraphics
 				return;
 			}
 			Vector2 x = new Vector2 (float.Parse (tokens [1], System.Globalization.CultureInfo.InvariantCulture), 
-				float.Parse (tokens [2], System.Globalization.CultureInfo.InvariantCulture));
+				            float.Parse (tokens [2], System.Globalization.CultureInfo.InvariantCulture));
 			mesh.AddTextureCoordinate (x);
 		}
 
@@ -87,7 +87,7 @@ namespace computergraphics
 			for (int i = 0; i < 3; i++) {
 				string field = tokens [i + 1];
 				string[] slashSeparatedIndices = field.Split ('/');
-				vertexIndices [i] = int.Parse (slashSeparatedIndices[0]) - 1;
+				vertexIndices [i] = int.Parse (slashSeparatedIndices [0]) - 1;
 				if (slashSeparatedIndices.Length > 1) {
 					texCoordIndices [i] = int.Parse (field.Split ('/') [1]) - 1;
 					hasTextureCoordinates = true;
@@ -96,7 +96,7 @@ namespace computergraphics
 			if (!hasTextureCoordinates) {
 				mesh.AddTriangle (vertexIndices [0], vertexIndices [1], vertexIndices [2]); 
 			} else {
-				Triangle t = new Triangle (vertexIndices [0], vertexIndices [1], vertexIndices [2], texCoordIndices[0], texCoordIndices[1], texCoordIndices[2] );
+				Triangle t = new Triangle (vertexIndices [0], vertexIndices [1], vertexIndices [2], texCoordIndices [0], texCoordIndices [1], texCoordIndices [2]);
 				mesh.AddTriangle (t);
 			}
 		}

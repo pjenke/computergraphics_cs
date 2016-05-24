@@ -26,7 +26,7 @@ namespace computergraphics
 			this.resolution = resolution;
 		}
 
-		public void Draw ()
+		public void DrawGL ()
 		{
 			GL.Begin (PrimitiveType.Triangles);
 			GL.Color4 (Color4.Orchid);

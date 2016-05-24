@@ -5,16 +5,29 @@ uniform sampler2D texture; // Texture object
 varying vec2 texture_coordinate; // Texture coordinate
 
 uniform vec3 camera_position;
-uniform int useTexture; 
+uniform int shaderMode; 
 
 /**
  * Fragment shader: Phong shading with Phong lighting model.
  */
 void main (void)
 {
+	// Init result
+    gl_FragColor = vec4(0,0,0,1);
+    
 	vec3 surfaceColor = color;
-	if (useTexture > 0 ){
+	if ( shaderMode == 0 ){
+		// Phong shading
+		surfaceColor = color;
+	}
+	if (shaderMode == 1 ){
+		// Texture
 		surfaceColor = texture2D(texture, texture_coordinate).xyz;
+	}
+	if (shaderMode == 2 ){
+		// No lighting
+    	gl_FragColor.xyz = color;
+    	return;
 	}
 
     // Set lights
@@ -23,9 +36,6 @@ void main (void)
     lightPositions[0] = vec3(-2,5,3);
     lightPositions[1] = vec3(3,-2,-5);
 
-    // Init result
-    gl_FragColor = vec4(0,0,0,1);
-   
    	// Ambient color
     gl_FragColor.xyz += vec3(0.1, 0.1, 0.1);
    
@@ -41,12 +51,14 @@ void main (void)
         float diffuseReflection = 0.9;
         float speculatReflection = 0.9;
         if ( dot( N, L ) > 0.0 ){
-            diffuse = surfaceColor * clamp( abs(dot( normalize(N), L )), 0.0, 1.0 ) * diffuseReflection;
+            diffuse = surfaceColor * clamp( dot( normalize(N), L ), 0.0, 1.0 ) * diffuseReflection;
             
             // Specular
             vec3 E = normalize( camera_position - p );
             vec3 R = normalize( reflect( L, N) );
-            specular = vec3(1,1,1) * pow(abs(dot(R,E)), 20.0);
+            if ( dot(R,E) < 0.0 ){
+            	specular = vec3(1,1,1) * pow(abs(dot(R,E)), 20.0);
+            }
         }
 
         gl_FragColor.xyz += diffuse + specular;

@@ -4,7 +4,7 @@ varying vec3 color; // Surface color
 varying vec2 texture_coordinate; // Texture coordinate
 
 uniform vec3 camera_position;
-uniform int useTexture; 
+uniform int shaderMode; 
 
 /**
  * Vertex shader: Phong lighting model, Phong shading.

@@ -1,8 +1,8 @@
 ﻿<Properties StartupItem="computergraphics/computergraphics.csproj">
   <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug|x86" />
-  <MonoDevelop.Ide.Workbench ActiveDocument="computergraphics/src/Shader.cs">
+  <MonoDevelop.Ide.Workbench ActiveDocument="computergraphics/src/framework/Texture.cs">
     <Files>
-      <File FileName="computergraphics/src/Shader.cs" Line="29" Column="1" />
+      <File FileName="computergraphics/src/framework/Texture.cs" Line="74" Column="4" />
     </Files>
   </MonoDevelop.Ide.Workbench>
   <MonoDevelop.Ide.DebuggingService.Breakpoints>

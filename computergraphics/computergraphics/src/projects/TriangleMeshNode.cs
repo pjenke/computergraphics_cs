@@ -15,14 +15,14 @@ namespace computergraphics
 		/**
 		 * Contained triangle mesh.
 		 * */
-		TriangleMesh mesh;
+		private TriangleMesh mesh;
 
 		public TriangleMeshNode (TriangleMesh mesh)
 		{
 			this.mesh = mesh;
 		}
 
-		public void Draw ()
+		public void DrawGL ()
 		{
 
 			if (mesh.Tex != null) {

@@ -18,12 +18,12 @@ namespace computergraphics
 			this.translation = translation;
 		}
 
-		public override void Draw()
+		public override void DrawGL()
 		{
 			GL.PushMatrix ();
 			GL.MatrixMode(MatrixMode.Modelview);
 			GL.Translate (translation);
-			base.Draw ();
+			base.DrawGL ();
 			GL.PopMatrix ();
 		}
 

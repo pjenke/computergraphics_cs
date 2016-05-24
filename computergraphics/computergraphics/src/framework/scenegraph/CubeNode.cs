@@ -14,13 +14,14 @@ namespace computergraphics
 		/**
 		 * Cube is centered at the origin and its sidelength is twice this value.
 		 * */
-		private float sideLength = 0.5f;
+		private float sideLength;
 
-		public CubeNode ()
+		public CubeNode (float sideLength)
 		{
+			this.sideLength = sideLength;
 		}
 
-		public void Draw ()
+		public void DrawGL ()
 		{
 			GL.Begin (PrimitiveType.Triangles);
 			GL.Color4 (Color4.Aquamarine);
