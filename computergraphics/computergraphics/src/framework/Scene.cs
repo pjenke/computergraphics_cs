@@ -123,10 +123,10 @@ namespace computergraphics
 					// Clear
 					GL.Clear (ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
 
-					// Render scene
-					SetProjectionMatrix ();
-					SetModelViewMatrix ();
-					Draw ();
+                    // Render scene
+                    SetProjectionMatrix ();
+                    SetModelViewMatrix();
+                    Draw ();
 
 					game.SwapBuffers ();
 				};
@@ -186,6 +186,7 @@ namespace computergraphics
 		{
 			camera.AspectRatio = (float)width / (float)height;
 			projectionMatrixUpdate = true;
+            modelviewMatrixUpdate = true;
 		}
 
 		/**
