@@ -13,6 +13,9 @@ namespace computergraphics
 		 * */
 		Vector3 eye = new Vector3 (0, 0, 5);
 
+		/**
+		 * Eye property
+		 * */
 		public Vector3 Eye {
 			get { return eye; }
 		}
@@ -77,12 +80,12 @@ namespace computergraphics
 		{
 			Vector3 dir = Vector3.Subtract (eye, target);
 			// Rotate around up-vector
-			eye = Vector3.Add (Mult (Matrix3.CreateFromAxisAngle (up, alpha), dir), target);
+			eye = Vector3.Add (MathHelper.Mult (Matrix3.CreateFromAxisAngle (up, alpha), dir), target);
 			// Rotate around side-vector
 			dir = Vector3.Subtract (eye, target);
 			Vector3 side = Vector3.Cross (dir, up);
 			side.Normalize ();
-			eye = Vector3.Add (Mult (Matrix3.CreateFromAxisAngle (side, -beta), dir), target);
+			eye = Vector3.Add (MathHelper.Mult (Matrix3.CreateFromAxisAngle (side, -beta), dir), target);
 			// Fix up-vector
 			dir = Vector3.Subtract (target, eye);
 			side = Vector3.Cross (dir, up);
@@ -100,14 +103,6 @@ namespace computergraphics
 
 			// Update LookAt
 			LookAt = Matrix4.LookAt (eye, target, up);
-		}
-
-		/**
-		 * Helper method: multiply x = A * b (vector = matrix * vector)
-		 * */
-		public static Vector3 Mult (Matrix3 M, Vector3 v)
-		{
-			return new Vector3 (Vector3.Dot (M.Row0, v), Vector3.Dot (M.Row1, v), Vector3.Dot (M.Row2, v));
 		}
 
 		public float getFovy ()

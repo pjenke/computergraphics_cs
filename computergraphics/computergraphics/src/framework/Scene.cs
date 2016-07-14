@@ -30,6 +30,9 @@ namespace computergraphics
 		 * */
 		private GroupNode rootNode = new GroupNode ();
 
+		/**
+		 * Timer to create animation events
+		 * */
 		private Timer timer;
 
 		/**
@@ -42,13 +45,11 @@ namespace computergraphics
 		 * */
 		private bool modelviewMatrixUpdate = true;
 
-		public Scene (Shader.ShaderMode mode)
+		public Scene (int timerTimeout, Shader.ShaderMode mode)
 		{
 			camera = new Camera ();
 			shader = new Shader (mode);
-
-			// Timer
-			timer = new Timer (100);
+			timer = new Timer (timerTimeout);
 			timer.Elapsed += new ElapsedEventHandler (OnTimedEvent);
 		}
 
@@ -56,7 +57,7 @@ namespace computergraphics
 		 * Main thread + event handlers.
 		 * */
 		[STAThread]
-		public void GameLoop()
+		public void GameLoop ()
 		{
 			Nullable<MouseState> previous = null;
 

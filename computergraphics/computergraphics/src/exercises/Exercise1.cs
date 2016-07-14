@@ -7,7 +7,8 @@ namespace computergraphics
 {
 	public class Exercise1 : Scene
 	{
-		public Exercise1 () : base (Shader.ShaderMode.TEXTURE)
+		// Base constructor: Timer timeout between two TimerTick events and shader mode (PHONG, TEXTURE, NO_LIGHTING)
+		public Exercise1 () : base (100, Shader.ShaderMode.PHONG)
 		{
 			// Sphere geometry
 			TranslationNode sphereTranslation =
@@ -23,14 +24,13 @@ namespace computergraphics
 			cubeTranslation.AddChild (cubeNode);
 			getRoot ().AddChild (cubeTranslation);
 
-			// Triangle mesh
-			TriangleMesh mesh = new TriangleMesh ("textures/lego.png");
-			ObjReader reader = new ObjReader ();
-			reader.read ("meshes/cube.obj", mesh);
-			TriangleMeshNode meshNode = new TriangleMeshNode (mesh);
-			getRoot ().AddChild (meshNode);
+//			// Triangle mesh
+//			TriangleMesh mesh = new TriangleMesh ("textures/lego.png");
+//			ObjReader reader = new ObjReader ();
+//			reader.read ("meshes/cube.obj", mesh);
+//			TriangleMeshNode meshNode = new TriangleMeshNode (mesh);
+//			getRoot ().AddChild (meshNode);
 
-			Console.WriteLine ("Added");
 		}
 	}
 }
