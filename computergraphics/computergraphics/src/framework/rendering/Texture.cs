@@ -8,13 +8,19 @@ using OpenTK.Graphics.OpenGL;
 namespace computergraphics
 {
 	/**
-	 * Handles an OpenGL-Texture
+	 * Handles an OpenGL-Texture.
 	 * */
 	public class Texture
 	{
 
+		/**
+		 * OpenGL texture id.
+		 * */
 		private int textureId = -1;
 
+		/**
+		 * Texture filename
+		 * */
 		private string filename;
 
 		public Texture (string filename)
@@ -22,6 +28,9 @@ namespace computergraphics
 			this.filename = filename;
 		}
 
+		/**
+		 * Returns true if the texture is loaded.
+		 * */
 		public bool IsLoaded()
 		{
 			return textureId >= 0;
@@ -54,7 +63,7 @@ namespace computergraphics
 			GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.Linear);
 			GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)TextureMagFilter.Linear);
 
-			Bitmap bmp = new Bitmap(AssetPath.getPathToAsset(filename));
+			Bitmap bmp = new Bitmap(AssetPath.GetPathToAsset(filename));
 			BitmapData bmp_data = bmp.LockBits(new Rectangle(0, 0, bmp.Width, bmp.Height), ImageLockMode.ReadOnly, System.Drawing.Imaging.PixelFormat.Format32bppArgb);
 
 			GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.Rgba, bmp_data.Width, bmp_data.Height, 0,

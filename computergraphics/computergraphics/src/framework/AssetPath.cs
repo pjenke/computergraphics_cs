@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace computergraphics
+﻿namespace computergraphics
 {
 	/**
 	 * Compute the relative path to the assets folder.
@@ -15,7 +13,7 @@ namespace computergraphics
 		/**
 		 * Returns the relative path to the asset filename.
 		 * */
-		public static string getPathToAsset(string assetFilename)
+		public static string GetPathToAsset(string assetFilename)
 		{
 			return assetPath + assetFilename;
 		}

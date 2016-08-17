@@ -1,35 +1,36 @@
-﻿using System;
-using OpenTK;
-using OpenTK.Graphics;
-using OpenTK.Graphics.OpenGL;
+﻿using OpenTK;
 
 namespace computergraphics
 {
 	/**
 	 * Translates all child node along a given vector.
 	 * */
-	public class TranslationNode : GroupNode
+	public class TranslationNode : InnerNode
 	{
 
-		private Vector3 translation;
+		/**
+		 * Translation matrix (model matrix)
+		 * */
+		private Matrix4 translation;
 
-		public TranslationNode (Vector3 translation)
+		public Vector3 Translation
 		{
-			this.translation = translation;
+			set { translation = Matrix4.CreateTranslation(value); }
 		}
 
-		public override void DrawGL()
+		public TranslationNode(Vector3 translation)
 		{
-			GL.PushMatrix ();
-			GL.MatrixMode(MatrixMode.Modelview);
-			GL.Translate (translation);
-			base.DrawGL ();
-			GL.PopMatrix ();
+			this.translation = Matrix4.CreateTranslation(translation);
 		}
 
-		public override void TimerTick ()
+		public override void Traverse(RenderMode mode, Matrix4 modelMatrix)
 		{
-			base.TimerTick ();
+			base.Traverse(mode, Matrix4.Mult(translation, modelMatrix));
+		}
+
+		public override void TimerTick(int counter)
+		{
+			base.TimerTick(counter);
 		}
 	}
 }

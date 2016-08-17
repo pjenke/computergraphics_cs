@@ -1,5 +1,4 @@
-﻿using System;
-using OpenTK;
+﻿using OpenTK;
 
 namespace computergraphics
 {
@@ -18,7 +17,6 @@ namespace computergraphics
 		 * */
 		int[] texCoordIndices = { -1, -1, -1 };
 
-
 		/**
 		 * Triangle normal, originally uninitialized.
 		 * */
@@ -34,7 +32,7 @@ namespace computergraphics
 
 		public Triangle (int vertexIndexA, int vertexIndexB, int vertexIndexC) :
 			this (vertexIndexA, vertexIndexB, vertexIndexC, 
-			      0, 0, 0,
+			      -1, -1, -1,
 			      Vector3.UnitY)
 		{
 		}

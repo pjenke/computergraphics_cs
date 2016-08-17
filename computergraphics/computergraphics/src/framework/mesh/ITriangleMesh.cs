@@ -1,5 +1,4 @@
-﻿using System;
-using OpenTK;
+﻿using OpenTK;
 
 namespace computergraphics
 {
@@ -10,44 +9,60 @@ namespace computergraphics
 	{
 
 		/**
-		 * Add vertex.
+		 * Add vertex. Return index of vertex in vertex list.
 		 * */
-		void AddVertex (Vector3 vertex);
+		int AddVertex(Vector3 vertex);
 
 		/**
 		 * Add triangle by indices.
 		 * */
-		void AddTriangle (int a, int b, int c);
+		void AddTriangle(int a, int b, int c);
 
 		/**
 		 * Add triangle.
 		 * */
-		void AddTriangle (Triangle t);
+		void AddTriangle(Triangle t);
 
 		/**
 		 * Add texture coordinate.
 		 * */
 		void AddTextureCoordinate(Vector2 texCoord);
 
-		int GetNumberOfTriangles ();
-
-		Triangle GetTriangle (int triangleIndex);
-
-		int GetNumberOfVertices ();
-
-		Vector3 GetVertex (int vertexIndex);
-
-		Vector2 GetTextureCoordinate(int index);
-
 		/**
-		 * Compute normals for all triangles.
+		 * Set a texture object for the mesh.
 		 * */
-		void ComputeTriangleNormals ();
+		void SetTexture(Texture texture);
 
 		/**
 		 * Clear datastructure.
 		 * */
-		void Clear ();
+		void Clear();
+
+		/**
+		 * Compute normals for all triangles.
+		 * */
+		void ComputeTriangleNormals();
+
+		/**
+		 * Create a mesh of the shadow polygons.
+		 * 
+		 * lightPosition: Position of the light source.
+		 * extend: Length of the polygons
+		 * shadowPolygonMesh: Result is put in there
+		 * */
+		void CreateShadowPolygons(Vector3 lightPosition, float extend, ITriangleMesh shadowPolygonMesh);
+
+		int GetNumberOfTriangles();
+
+		Triangle GetTriangle(int triangleIndex);
+
+		int GetNumberOfVertices();
+
+		Vector3 GetVertex(int vertexIndex);
+
+		Vector2 GetTextureCoordinate(int index);
+
+		Texture GetTexture();
 	}
 }
 

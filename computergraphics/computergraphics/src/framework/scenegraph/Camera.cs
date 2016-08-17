@@ -11,7 +11,7 @@ namespace computergraphics
 		/**
 		 * Eye point
 		 * */
-		Vector3 eye = new Vector3 (0, 0, 5);
+		private Vector3 eye;
 
 		/**
 		 * Eye property
@@ -23,37 +23,37 @@ namespace computergraphics
 		/**
 		 * Camera refernece point
 		 * */
-		Vector3 target = new Vector3 (0, 0, 0);
+		private Vector3 refPoint;
 
 		/**
 		 * Up-vector
 		 * */
-		Vector3 up = Vector3.UnitY;
+		private Vector3 up;
 
 		/**
 		 * Current modelview matrix
 		 * */
-		Matrix4 LookAt;
+		Matrix4 viewMatrix;
 
 		/**
-		 * Field of view in y-direction
+		 * Field of view in y-direction (angle in radiens)
 		 * */
-		float fovy = 45.0f * (float)Math.PI / 180.0f;
+		private float fovy;
 
 		/**
 		 * Near clipping plane
 		 * */
-		float zNear = 0.05f;
+		private float zNear;
 
 		/**
 		 * Far clipping plane
 		 * */
-		float zFar = 10.0f;
+		private float zFar;
 
 		/**
 		 * Aspect ratio (should match window dimensions
 		 * */
-		float aspectRatio = 1.0f;
+		private float aspectRatio;
 
 		/**
 		 * Aspect raio property
@@ -65,57 +65,67 @@ namespace computergraphics
 
 		public Camera ()
 		{
-			LookAt = Matrix4.LookAt (eye, target, up);
-		}
-
-		public Matrix4 getLookAtMatrix ()
-		{
-			return LookAt;
+			eye = new Vector3(0, 0, 5);
+			refPoint = new Vector3(0, 0, 0);
+			up = Vector3.UnitY;
+			fovy = 45.0f * (float)Math.PI / 180.0f;
+			zNear = 0.05f;
+			zFar = 10.0f;
+			aspectRatio = 1.0f;
+			viewMatrix = Matrix4.LookAt (eye, refPoint, up);
 		}
 
 		/**
 		 * Update the camera eye point by rotation angles.
 		 * */
-		public void updateLookAtMatrix (float alpha, float beta)
+		public void UpdateLookAtMatrix (float alpha, float beta)
 		{
-			Vector3 dir = Vector3.Subtract (eye, target);
+			Vector3 dir = Vector3.Subtract (eye, refPoint);
 			// Rotate around up-vector
-			eye = Vector3.Add (MathHelper.Mult (Matrix3.CreateFromAxisAngle (up, alpha), dir), target);
+			eye = Vector3.Add (MathHelper.Multiply (Matrix3.CreateFromAxisAngle (up, alpha), dir), refPoint);
 			// Rotate around side-vector
-			dir = Vector3.Subtract (eye, target);
+			dir = Vector3.Subtract (eye, refPoint);
 			Vector3 side = Vector3.Cross (dir, up);
 			side.Normalize ();
-			eye = Vector3.Add (MathHelper.Mult (Matrix3.CreateFromAxisAngle (side, -beta), dir), target);
+			eye = Vector3.Add (MathHelper.Multiply (Matrix3.CreateFromAxisAngle (side, -beta), dir), refPoint);
 			// Fix up-vector
-			dir = Vector3.Subtract (target, eye);
+			dir = Vector3.Subtract (refPoint, eye);
 			side = Vector3.Cross (dir, up);
 			side.Normalize ();
 			up = Vector3.Cross (side, dir);
 			up.Normalize ();
 			// Update LookAt
-			LookAt = Matrix4.LookAt (eye, target, up);
+			viewMatrix = Matrix4.LookAt (eye, refPoint, up);
 		}
 
+		/**
+		 * Zoom in/out.
+		 * */
 		public void Zoom (int factor)
 		{
-			Vector3 dir = Vector3.Subtract (target, eye);
+			Vector3 dir = Vector3.Subtract (refPoint, eye);
 			eye = Vector3.Add (eye, Vector3.Multiply (dir, 0.002f * factor));
 
 			// Update LookAt
-			LookAt = Matrix4.LookAt (eye, target, up);
+			viewMatrix = Matrix4.LookAt (eye, refPoint, up);
 		}
 
-		public float getFovy ()
+		public Matrix4 GetViewMatrix()
+		{
+			return viewMatrix;
+		}
+
+		public float GetFovy ()
 		{
 			return fovy;
 		}
 
-		public float getZNear ()
+		public float GetZNear ()
 		{
 			return zNear;
 		}
 
-		public float getZFar ()
+		public float GetZFar ()
 		{
 			return zFar;
 		}

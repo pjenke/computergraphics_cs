@@ -1,11 +1,12 @@
 varying vec3 N; // Normal vector
 varying vec3 p; // Surface point
-varying vec3 color; // Surface color
+varying vec4 color; // Surface color
 uniform sampler2D texture; // Texture object
 varying vec2 texture_coordinate; // Texture coordinate
 
 uniform vec3 camera_position;
 uniform int shaderMode; 
+uniform vec3 lightPosition;
 
 /**
  * Fragment shader: Phong shading with Phong lighting model.
@@ -13,12 +14,13 @@ uniform int shaderMode;
 void main (void)
 {
 	// Init result
-    gl_FragColor = vec4(0,0,0,1);
+    gl_FragColor = vec4(0,0,0,color.a);
+    float ambientFactor = 0.25;
     
-	vec3 surfaceColor = color;
+	vec3 surfaceColor = color.xyz;
 	if ( shaderMode == 0 ){
 		// Phong shading
-		surfaceColor = color;
+		surfaceColor = color.xyz;
 	}
 	if (shaderMode == 1 ){
 		// Texture
@@ -26,18 +28,23 @@ void main (void)
 	}
 	if (shaderMode == 2 ){
 		// No lighting
-    	gl_FragColor.xyz = color;
+    	gl_FragColor = color;
+    	return;
+	}
+	if (shaderMode == 3 ){
+		// Ambient only
+    	gl_FragColor.xyz = color.xyz * ambientFactor;
     	return;
 	}
 
     // Set lights
-    int numberOfLights = 2;
+    int numberOfLights = 1;
     vec3 lightPositions[2];
-    lightPositions[0] = vec3(-2,5,3);
-    lightPositions[1] = vec3(3,-2,-5);
+    lightPositions[0] = lightPosition;
+    lightPositions[1] = vec3(-2,1,0);
 
    	// Ambient color
-    gl_FragColor.xyz += vec3(0.1, 0.1, 0.1);
+    gl_FragColor.xyz += color.xyz * ambientFactor;
    
     // Add diffuse and specular for each light
     for ( int i = 0; i < numberOfLights; i++ ){

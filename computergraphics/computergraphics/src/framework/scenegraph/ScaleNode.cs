@@ -1,35 +1,30 @@
-﻿using System;
-using OpenTK;
-using OpenTK.Graphics;
-using OpenTK.Graphics.OpenGL;
+﻿using OpenTK;
 
 namespace computergraphics
 {
 	/**
-	 * Scales all child node in each axis according to the scale vector.
+	 * Scales all child nodes in each axis according to the scale vector.
 	 * */
-	public class ScaleNode : GroupNode
+	public class ScaleNode : InnerNode
 	{
-
-		private Vector3 scale;
+		/**
+		 * Scaling matrix (model matrix).
+		 * */
+		private Matrix4 scale;
 
 		public ScaleNode (Vector3 scale)
 		{
-			this.scale = scale;
+			this.scale = Matrix4.CreateScale(scale);
 		}
 
-		public override void DrawGL ()
+		public override void Traverse (RenderMode mode, Matrix4 modelMatrix)
 		{
-			GL.PushMatrix ();
-			GL.MatrixMode (MatrixMode.Modelview);
-			GL.Scale (scale);
-			base.DrawGL ();
-			GL.PopMatrix ();
+			base.Traverse(mode, Matrix4.Mult(scale, modelMatrix));
 		}
 
-		public override void TimerTick ()
+		public override void TimerTick (int counter)
 		{
-			base.TimerTick ();
+			base.TimerTick (counter);
 		}
 	}
 }

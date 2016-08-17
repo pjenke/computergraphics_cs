@@ -1,5 +1,4 @@
-﻿using System;
-using OpenTK;
+﻿using OpenTK;
 
 namespace computergraphics
 {
@@ -21,7 +20,8 @@ namespace computergraphics
 		/**
 		 * Position property
 		 * */
-		public Vector3 Position {
+		public Vector3 Position
+		{
 			set { position = value; }
 			get { return position; }
 		}
@@ -29,17 +29,18 @@ namespace computergraphics
 		/**
 		 * Normal property
 		 * */
-		public Vector3 Normal {
+		public Vector3 Normal
+		{
 			set { normal = value; }
 			get { return normal; }
 		}
 
-		public Vertex (Vector3 position) :
-			this (position, Vector3.UnitY)
+		public Vertex(Vector3 position) :
+			this(position, Vector3.UnitY)
 		{
 		}
 
-		public Vertex (Vector3 position, Vector3 normal)
+		public Vertex(Vector3 position, Vector3 normal)
 		{
 			this.position = position;
 			this.normal = normal;

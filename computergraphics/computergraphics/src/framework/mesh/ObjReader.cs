@@ -20,24 +20,24 @@ namespace computergraphics
 		/**
 		 * Read an OBJ file an create a mesh from the content.
 		 * */
-		public void read (string filename, ITriangleMesh mesh)
+		public void Read (string filename, ITriangleMesh mesh)
 		{
 			this.mesh = mesh;
 			mesh.Clear ();
 
 			// Read input
-			string objSource = System.IO.File.ReadAllText (AssetPath.getPathToAsset (filename));
+			string objSource = System.IO.File.ReadAllText (AssetPath.GetPathToAsset (filename));
 
 			string[] lines = objSource.Split ('\n');
 			foreach (String line in lines) {
 				string[] tokens = line.Trim ().Split (' ', '\t');
 				if (tokens.Length > 0) {
 					if (tokens [0].CompareTo ("v") == 0) {
-						parseVertex (tokens);
+						ParseVertex (tokens);
 					} else if (tokens [0].CompareTo ("f") == 0) {
-						parseFacet (tokens);
+						ParseFacet (tokens);
 					} else if (tokens [0].CompareTo ("vt") == 0) {
-						parseTextureCoordinate (tokens);
+						ParseTextureCoordinate (tokens);
 					}
 				}
 			}
@@ -49,7 +49,7 @@ namespace computergraphics
 		/**
 		 * Parse a line containing a vertex
 		 **/
-		private void parseVertex (String[] tokens)
+		private void ParseVertex (String[] tokens)
 		{
 			if (tokens.Length < 4) {
 				return;
@@ -63,7 +63,7 @@ namespace computergraphics
 		/**
 		 * Parse a line containing a vertex
 		 **/
-		private void parseTextureCoordinate (String[] tokens)
+		private void ParseTextureCoordinate (String[] tokens)
 		{
 			if (tokens.Length < 3) {
 				return;
@@ -76,7 +76,7 @@ namespace computergraphics
 		/**
 		 * Parse a line containing a facet
 		 **/
-		private void parseFacet (String[] tokens)
+		private void ParseFacet (String[] tokens)
 		{
 			if (tokens.Length < 4) {
 				return;
