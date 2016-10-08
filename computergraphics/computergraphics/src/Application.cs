@@ -7,7 +7,7 @@
 	{
 		public static void Main()
 		{
-			Scene scene = new ShadowScene(); 
+			Scene scene = new IslandScene(); 
 			OpenTKWindow window = new OpenTKWindow(scene);
 			window.Run ();
 		}

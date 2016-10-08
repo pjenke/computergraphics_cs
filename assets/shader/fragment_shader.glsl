@@ -1,11 +1,11 @@
 varying vec3 N; // Normal vector
 varying vec3 p; // Surface point
 varying vec4 color; // Surface color
-uniform sampler2D texture; // Texture object
 varying vec2 texture_coordinate; // Texture coordinate
 
-uniform vec3 camera_position;
+uniform sampler2D texture; // Texture object
 uniform int shaderMode; 
+uniform vec3 camera_position;
 uniform vec3 lightPosition;
 
 /**
@@ -13,9 +13,12 @@ uniform vec3 lightPosition;
  */
 void main (void)
 {
+	float ambientFactor = 0.25;
+    float diffuseReflection = 0.9;
+	float specularReflection = 0.3;
+
 	// Init result
     gl_FragColor = vec4(0,0,0,color.a);
-    float ambientFactor = 0.25;
     
 	vec3 surfaceColor = color.xyz;
 	if ( shaderMode == 0 ){
@@ -36,40 +39,35 @@ void main (void)
     	gl_FragColor.xyz = color.xyz * ambientFactor;
     	return;
 	}
-
-    // Set lights
-    int numberOfLights = 1;
-    vec3 lightPositions[2];
-    lightPositions[0] = lightPosition;
-    lightPositions[1] = vec3(-2,1,0);
+	if (shaderMode == 4 ){
+		// Texture w/o lighting
+    	gl_FragColor.xyz = texture2D(texture, texture_coordinate).xyz;
+    	gl_FragColor.a = 1.0;
+    	return;
+	}
+	if (shaderMode == 5 ){
+		// Fullscreen texture: Texture w/o lighting
+    	gl_FragColor.xyz = texture2D(texture, texture_coordinate).xyz;
+    	gl_FragColor.a = 1.0;
+    	return;
+	}
 
    	// Ambient color
-    gl_FragColor.xyz += color.xyz * ambientFactor;
+    gl_FragColor.xyz = color.xyz * ambientFactor;
    
-    // Add diffuse and specular for each light
-    for ( int i = 0; i < numberOfLights; i++ ){
-
-        // Point light, Spotlight
-        vec3 L = normalize(lightPositions[i].xyz - p);
+    // Light direction
+	vec3 L = normalize(lightPosition-p);
             
-        // Diffuse
-        vec3 diffuse = vec3(0,0,0);
-        vec3 specular = vec3(0,0,0);
-        float diffuseReflection = 0.9;
-        float speculatReflection = 0.9;
-        if ( dot( N, L ) > 0.0 ){
-            diffuse = surfaceColor * clamp( dot( normalize(N), L ), 0.0, 1.0 ) * diffuseReflection;
+	// Phong
+	if ( dot( N, L ) > 0.0 ){
+		gl_FragColor.xyz += surfaceColor * dot( N, L ) * diffuseReflection;
             
-            // Specular
-            vec3 E = normalize( camera_position - p );
-            vec3 R = normalize( reflect( L, N) );
-            if ( dot(R,E) < 0.0 ){
-            	specular = vec3(1,1,1) * pow(abs(dot(R,E)), 20.0);
-            }
-        }
-
-        gl_FragColor.xyz += diffuse + specular;
-    }
-
+		// Specular
+		vec3 E = normalize(-p );
+		vec3 R = normalize( reflect( L, N) );
+		if ( dot(R,E) < 0.0 ){
+			gl_FragColor.xyz += vec3(1,1,1) * pow(abs(dot(R,E)), 20.0) * specularReflection;
+		}
+	}
     gl_FragColor = clamp( gl_FragColor, 0.0, 1.0 );
 }

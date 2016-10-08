@@ -98,6 +98,28 @@ namespace computergraphics
 			mesh.AddTriangle (0, 3, 2);
 			mesh.ComputeTriangleNormals ();
 		}
+
+		/**
+		 * Generated the unification of two meshes. Attention: no new mesh is generated, in fact the 
+		 * geometry of mesh2 is added to mesh1.
+		 */
+		public static ITriangleMesh Unite(ITriangleMesh mesh1, ITriangleMesh mesh2)
+		{
+			int numberOfVertsMesh1 = mesh1.GetNumberOfVertices();
+			for (int i = 0; i < mesh2.GetNumberOfVertices(); i++)
+			{
+				mesh1.AddVertex(mesh2.GetVertex(i));
+			}
+			for (int i = 0; i < mesh2.GetNumberOfTriangles(); i++)
+			{
+				Triangle t = mesh2.GetTriangle(i);
+				mesh1.AddTriangle(t.GetVertexIndex(0) + numberOfVertsMesh1,
+								  t.GetVertexIndex(1) + numberOfVertsMesh1,
+								  t.GetVertexIndex(2) + numberOfVertsMesh1);
+			}
+			mesh1.ComputeTriangleNormals();
+			return mesh1;
+		}
 	}
 }
 
