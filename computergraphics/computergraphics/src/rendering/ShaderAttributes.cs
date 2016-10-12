@@ -49,6 +49,11 @@ namespace computergraphics
 		 * */
 		private int locationColor = -1;
 
+		/**
+		 * Texture coordinates
+		 * */
+		private int locationTexCoords = -1;
+
 
 		public int LocationPosition
 		{
@@ -86,6 +91,18 @@ namespace computergraphics
 			}
 		}
 
+		public int LocationTexCoords
+		{
+			get
+			{
+				if (locationTexCoords < 0)
+				{
+					Console.WriteLine("Invalid tex coord attribute location.");
+				}
+				return locationTexCoords;
+			}
+		}
+
 		/**
    		 * Singleton instance
    		 */
@@ -112,7 +129,8 @@ namespace computergraphics
 			GetAttributeLocation(shaderProgramId, out locationVertex, "inVertex");
 			GetAttributeLocation(shaderProgramId, out locationNormal, "inNormal");
 			GetAttributeLocation(shaderProgramId, out locationColor, "inColor");
-			GetUniformLocation(shaderProgramId, out locationCameraPosition, "camera_position");
+			GetAttributeLocation(shaderProgramId, out locationTexCoords, "inTexCoords");
+			//GetUniformLocation(shaderProgramId, out locationCameraPosition, "camera_position");
 			GetUniformLocation(shaderProgramId, out locationShaderMode, "shaderMode");
 			GetUniformLocation(shaderProgramId, out locationLightPosition, "lightPosition");
 			GetUniformLocation(shaderProgramId, out locationModelMatrix, "modelMatrix");

@@ -6,8 +6,9 @@ varying vec2 texture_coordinate; // Texture coordinate
 attribute vec3 inVertex;
 attribute vec3 inNormal;
 attribute vec4 inColor;
+attribute vec2 inTexCoords;
+attribute vec3 camera_position;
 
-uniform vec3 camera_position;
 uniform int shaderMode; 
 uniform mat4 modelMatrix; 
 uniform mat4 viewMatrix; 
@@ -24,7 +25,7 @@ void main(void)
     N = (modelMatrix * vec4( inNormal, 0.0)).xyz;
     //N = (modelMatrix * vec4( gl_Normal, 0.0)).xyz;
     color = inColor;
-    texture_coordinate = vec2(gl_MultiTexCoord0);
+    texture_coordinate = inTexCoords;
     gl_Position = gl_ProjectionMatrix * ( viewMatrix * (modelMatrix * vec4(inVertex.x, inVertex.y, inVertex.z, 1)));
     //gl_Position = gl_ProjectionMatrix * ( viewMatrix * (modelMatrix * gl_Vertex));
 }

@@ -17,7 +17,7 @@ namespace computergraphics
 		/**
 		 * Buffer indicides.
 		 * */
-		private int vertexBufferId = -1, normalBufferId = -1, colorBufferId = -1, indexBufferId;
+		private int vertexBufferId = -1, normalBufferId = -1, colorBufferId = -1, indexBufferId, texCoordBufferId;
 
 		/**
 		 * Use this primitive type for rendering. Attentions: This implies the number of vertices, normals and colors required; e.g. triangles require three vertices each.
@@ -85,6 +85,17 @@ namespace computergraphics
 			GL.BindBuffer(BufferTarget.ArrayBuffer, colorBufferId);
 			GL.BufferData(BufferTarget.ArrayBuffer, new IntPtr(colors.Length * sizeof(float)), colors, BufferUsageHint.StaticDraw);
 
+			// Texture coordinates
+			float[] texCoords = new float[renderVertices.Count * 2];
+			for (int i = 0; i < renderVertices.Count; i++)
+			{
+				texCoords[i * 2] = renderVertices[i].TexCoords.X;
+				texCoords[i * 2 + 1] = renderVertices[i].TexCoords.Y;
+			}
+			GL.GenBuffers(1, out texCoordBufferId);
+			GL.BindBuffer(BufferTarget.ArrayBuffer, texCoordBufferId);
+			GL.BufferData(BufferTarget.ArrayBuffer, new IntPtr(texCoords.Length * sizeof(float)), texCoords, BufferUsageHint.StaticDraw);
+
 			// Indices
 			int[] indices = new int[renderVertices.Count];
 			for (int i = 0; i < renderVertices.Count; i++)
@@ -114,7 +125,9 @@ namespace computergraphics
 				ShaderAttributes.GetInstance().LocationNormal);
 			GL.EnableVertexAttribArray(
 				ShaderAttributes.GetInstance().LocationColor);
-
+			GL.EnableVertexAttribArray(
+				ShaderAttributes.GetInstance().LocationTexCoords);
+			
 			GL.BindBuffer(BufferTarget.ArrayBuffer, vertexBufferId);
 			GL.VertexAttribPointer(ShaderAttributes.GetInstance().LocationPosition,
 								   3, VertexAttribPointerType.Float, false, 0, IntPtr.Zero);
@@ -126,6 +139,10 @@ namespace computergraphics
 			GL.BindBuffer(BufferTarget.ArrayBuffer, colorBufferId);
 			GL.VertexAttribPointer(ShaderAttributes.GetInstance().LocationColor,
 				4, VertexAttribPointerType.Float, false, 0, IntPtr.Zero);
+
+			GL.BindBuffer(BufferTarget.ArrayBuffer, texCoordBufferId);
+			GL.VertexAttribPointer(ShaderAttributes.GetInstance().LocationTexCoords,
+				2, VertexAttribPointerType.Float, false, 0, IntPtr.Zero);
 
 			GL.DrawArrays(primitiveType, 0, renderVertices.Count);
 

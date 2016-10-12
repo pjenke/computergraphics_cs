@@ -25,9 +25,14 @@ namespace computergraphics
 		 */
 		private Color4 color;
 
+		/**
+ 		 * Texture coordinates
+ 		 * */
+		private Vector2 texCoords;
+
 		public Vector3 Position
 		{
-			get { return position;}
+			get { return position; }
 		}
 
 		public Vector3 Normal
@@ -40,11 +45,21 @@ namespace computergraphics
 			get { return color; }
 		}
 
-		public RenderVertex(Vector3 position, Vector3 normal, Color4 color)
+		public Vector2 TexCoords
+		{
+			get { return texCoords; }
+		}
+
+		public RenderVertex(Vector3 position, Vector3 normal, Color4 color) : this(position, normal, color, new Vector2(0, 0))
+		{
+		}
+
+		public RenderVertex(Vector3 position, Vector3 normal, Color4 color, Vector2 texCoords)
 		{
 			this.position = position;
 			this.normal = normal;
 			this.color = color;
+			this.texCoords = texCoords;
 		}
 	}
 }

@@ -27,6 +27,7 @@ void main (void)
 	}
 	if (shaderMode == 1 ){
 		// Texture
+		ambientFactor = 0.0;
 		surfaceColor = texture2D(texture, texture_coordinate).xyz;
 	}
 	if (shaderMode == 2 ){

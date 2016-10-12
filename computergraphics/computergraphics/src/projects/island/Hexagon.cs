@@ -8,8 +8,8 @@ namespace computergraphics
 		private Vector3 pos;
 		private Hexagon[] neighbors = { null, null, null, null, null, null };
 		private float sideLength = 0.5f;
-		private float[] N_ANGLES = { ToRadiens(0), ToRadiens(60), ToRadiens(120), ToRadiens(180), ToRadiens(240), ToRadiens(300) };
-		private float[] V_ANGLES = { ToRadiens(30), ToRadiens(90), ToRadiens(150), ToRadiens(210), ToRadiens(270), ToRadiens(330) };
+		private static float[] N_ANGLES = { ToRadiens(0), ToRadiens(60), ToRadiens(120), ToRadiens(180), ToRadiens(240), ToRadiens(300) };
+		private static float[] V_ANGLES = { ToRadiens(30), ToRadiens(90), ToRadiens(150), ToRadiens(210), ToRadiens(270), ToRadiens(330) };
 
 		public float SideLength
 		{
@@ -23,7 +23,7 @@ namespace computergraphics
 		}
 
 		/**
-		 *Generate the neighbor hexagon at the given index (0 = top, clockwise, valid indices: 0...5)
+		 * Generate the neighbor hexagon at the given index (0 = top, clockwise, valid indices: 0...5)
 		 */
 		public Hexagon CreateNeighbor(int nIndex)
 		{
@@ -102,21 +102,42 @@ namespace computergraphics
 		}
 
 		/**
+         * Generate i'the texture coordinate. Size is the width of the texture footprint (0...1). center is the
+         * center of the texture foodprint must be >size/2 and smaller 1-size/2
+         */
+		public static Vector2 getTexCoord(float size, Vector2 center, int index)
+		{
+			return new Vector2(center.X + (float)Math.Sin(V_ANGLES[index]) * size,
+							   center.Y + (float)Math.Cos(V_ANGLES[index]) * size);
+		}
+
+		/**
 		 * Generate a triagle mesh for the hexagon
 		 */
 		public ITriangleMesh GenerateMesh()
 		{
 			ITriangleMesh mesh = new TriangleMesh();
+			Vector2[] texCoords = new Vector2[7];
+			Vector2 texCoordCenter = new Vector2(0.2f, 0.2f);
 			for (int i = 0; i < 6; i++)
 			{
 				Vector3 v = GetCorner(i);
 				mesh.AddVertex(v);
+				texCoords[i] = getTexCoord(0.2f, texCoordCenter, i);
 			}
 			mesh.AddVertex(pos);
+			texCoords[6] = texCoordCenter;
+
+			int texCoordStartIndex = mesh.GetNumberOfTexCoords();
+			for (int i = 0; i < 7; i++)
+			{
+				mesh.AddTextureCoordinate(texCoords[i]);
+			}
 
 			for (int i = 0; i < 6; i++)
 			{
-				mesh.AddTriangle(i, 6, (i + 1) % 6);
+				Triangle t = new Triangle(i, 6, (i + 1) % 6, texCoordStartIndex+i, texCoordStartIndex + 6, texCoordStartIndex + (i + 1) % 6);
+				mesh.AddTriangle(t);
 			}
 
 			mesh.ComputeTriangleNormals();
@@ -151,7 +172,7 @@ namespace computergraphics
 		/**
 		 * Returns true, if there is at least one open border.
 		 * */
-		public bool HasBorder()
+		public bool IsBorder()
 		{
 			for (int i = 0; i < 6; i++)
 			{

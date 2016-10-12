@@ -1,4 +1,5 @@
 ﻿using OpenTK;
+using System;
 using System.Collections.Generic;
 using System.Collections;
 
@@ -61,9 +62,10 @@ namespace computergraphics
 			return triangles.Count;
 		}
 
-		public void AddTextureCoordinate(Vector2 texCoord)
+		public int AddTextureCoordinate(Vector2 texCoord)
 		{
 			textureCoordinates.Add(texCoord);
+			return textureCoordinates.Count - 1;
 		}
 
 		public Triangle GetTriangle(int index)
@@ -83,6 +85,10 @@ namespace computergraphics
 
 		public Vector2 GetTextureCoordinate(int index)
 		{
+			if (index < 0 || index >= textureCoordinates.Count)
+			{
+				Console.WriteLine("Invalid index.");
+			}
 			return textureCoordinates[index];
 		}
 
@@ -201,6 +207,77 @@ namespace computergraphics
 				edge.Flip();
 			}
 			return d1 * d2 < 0;
+		}
+
+		public List<TriangleEdge> GetBorder()
+		{
+			List<TriangleEdge> border = new List<TriangleEdge>();
+			foreach (Triangle t in triangles)
+			{
+				for (int i = 0; i < 3; i++)
+				{
+					TriangleEdge e = new TriangleEdge(t.GetVertexIndex(i), t.GetVertexIndex((i + 1) % 3));
+					if (!border.Contains(e))
+					{
+						border.Add(e);
+					}
+					else {
+						border.Remove(e);
+					}
+				}
+			}
+			Console.WriteLine("Mesh border: " + border.Count + " edges.");
+
+			// Sort
+			List<TriangleEdge> sortedBorder = new List<TriangleEdge>();
+			while (border.Count > 0)
+			{
+				TriangleEdge start = border[0];
+				sortedBorder.Add(start);
+				border.Remove(start);
+
+				int endIdx = start.B;
+				bool found = true;
+				int borderPolySize = 1;
+				while (found)
+				{
+					found = false;
+					for (int i = 0; i < border.Count; i++)
+					{
+						TriangleEdge e = border[i];
+						if (e.A == endIdx)
+						{
+							sortedBorder.Add(e);
+							border.Remove(e);
+							endIdx = e.B;
+							found = true;
+							borderPolySize++;
+						}
+						else if (e.B == endIdx)
+						{
+							sortedBorder.Add(e);
+							border.Remove(e);
+							e.Flip();
+							endIdx = e.A;
+							found = true;
+							borderPolySize++;
+						}
+					}
+				}
+
+				Console.WriteLine("Border polygon found: " + ((start.A == sortedBorder[sortedBorder.Count - 1].B) ? "closed" : "open") + ", " + borderPolySize + " edges");
+			}
+			return sortedBorder;
+		}
+
+		public void SetVertex(int index, Vector3 pos)
+		{
+			vertices[index] = pos;
+		}
+
+		public int GetNumberOfTexCoords()
+		{
+			return textureCoordinates.Count;
 		}
 	}
 }

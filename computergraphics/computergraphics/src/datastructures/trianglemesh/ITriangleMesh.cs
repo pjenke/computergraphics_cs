@@ -1,4 +1,5 @@
 ﻿using OpenTK;
+using System.Collections.Generic;
 
 namespace computergraphics
 {
@@ -26,7 +27,7 @@ namespace computergraphics
 		/**
 		 * Add texture coordinate.
 		 * */
-		void AddTextureCoordinate(Vector2 texCoord);
+		int AddTextureCoordinate(Vector2 texCoord);
 
 		/**
 		 * Set a texture object for the mesh.
@@ -60,9 +61,18 @@ namespace computergraphics
 
 		Vector3 GetVertex(int vertexIndex);
 
+		void SetVertex(int index, Vector3 pos);
+
 		Vector2 GetTextureCoordinate(int index);
 
+		int GetNumberOfTexCoords();
+
 		Texture GetTexture();
+
+		/**
+		 * Returns the list of border edges
+		 **/
+		List<TriangleEdge> GetBorder();
 	}
 }
 

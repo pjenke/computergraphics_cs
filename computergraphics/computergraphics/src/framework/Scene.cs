@@ -152,6 +152,8 @@ namespace computergraphics
 
 			// Start timer
 			timer.Start();
+
+			InitContent();
 		}
 
 		/**
@@ -212,6 +214,10 @@ namespace computergraphics
 		}
 
 		public virtual void KeyPressed(Key key)
+		{
+		}
+
+		public virtual void InitContent()
 		{
 		}
 

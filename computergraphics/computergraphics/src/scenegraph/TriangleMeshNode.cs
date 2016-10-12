@@ -44,7 +44,17 @@ namespace computergraphics
 		/**
 		 * VBO for the normals.
 		 * */
-		private VertexBufferObject normalsVBO = new VertexBufferObject();
+		private VertexBufferObject normalsVBO = null;
+
+		/**
+		 * VBO for the border.
+		 * */
+		private VertexBufferObject borderVBO = null;
+
+		/**
+		 * Render the boundary
+		*/
+		private bool showBorder;
 
 		public ITriangleMesh Mesh
 		{
@@ -57,6 +67,12 @@ namespace computergraphics
 			set { showNormals = value; }
 		}
 
+		public bool ShowBorder
+		{
+			get { return showBorder; }
+			set { showBorder = value; }
+		}
+
 		public bool CastsShadow
 		{
 			get { return castsShadow; }
@@ -67,7 +83,6 @@ namespace computergraphics
 		{
 			this.mesh = mesh;
 			CreateTrianglesVBO();
-			CreateNormalsVBO();
 		}
 
 		/**
@@ -83,7 +98,8 @@ namespace computergraphics
 				for (int vertexIndex = 0; vertexIndex < 3; vertexIndex++)
 				{
 					Vector3 pos = mesh.GetVertex(t.GetVertexIndex(vertexIndex));
-					renderVertices.Add(new RenderVertex(pos, t.Normal, color));
+					Vector2 textCoords = mesh.GetTextureCoordinate(t.GetTexCoordIndex(vertexIndex));
+					renderVertices.Add(new RenderVertex(pos, t.Normal, color, textCoords));
 				}
 			}
 			trianglesVBO.Setup(renderVertices, PrimitiveType.Triangles);
@@ -94,7 +110,7 @@ namespace computergraphics
 		 * */
 		void CreateNormalsVBO()
 		{
-			// Normals VBO
+			normalsVBO = new VertexBufferObject();
 			List<RenderVertex> renderVertices = new List<RenderVertex>();
 			float scale = 0.05f;
 			Color4 normalColor = Color4.DarkGray;
@@ -109,6 +125,26 @@ namespace computergraphics
 				renderVertices.Add(new RenderVertex(centroid2normal, t.Normal, normalColor));
 			}
 			normalsVBO.Setup(renderVertices, PrimitiveType.Lines);
+		}
+
+		/*
+		 * Create the VBO for the border
+		 * */
+		void CreateBorderVBO()
+		{
+			borderVBO = new VertexBufferObject();
+			List<TriangleEdge> borderEdges = mesh.GetBorder();
+			Color4 borderColor = Color4.Pink;
+			List<RenderVertex> renderVertices = new List<RenderVertex>();
+			for (int i = 0; i < borderEdges.Count; i++)
+			{
+				TriangleEdge edge = borderEdges[i];
+				Vector3 a = mesh.GetVertex(edge.A);
+				Vector3 b = mesh.GetVertex(edge.B);
+				renderVertices.Add(new RenderVertex(a, new Vector3(0,1,0), borderColor));
+				renderVertices.Add(new RenderVertex(b, new Vector3(0, 1, 0), borderColor));
+			}
+			borderVBO.Setup(renderVertices, PrimitiveType.Lines);
 		}
 
 		public override void TimerTick(int counter)
@@ -165,7 +201,21 @@ namespace computergraphics
 			// Normals
 			if (showNormals)
 			{
+				if (normalsVBO == null)
+				{
+					CreateNormalsVBO();
+				}
 				normalsVBO.Draw();
+			}
+
+			// Border
+			if (showBorder)
+			{
+				if (borderVBO == null)
+				{
+					CreateBorderVBO();
+				}
+				borderVBO.Draw();
 			}
 		}
 
