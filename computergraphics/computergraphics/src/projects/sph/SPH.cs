@@ -1,12 +1,14 @@
-﻿using System;
+﻿using OpenTK;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace computergraphics
 {
     class SPH
     {
+
+        public SPH()
+        {
+        }
+
     }
 }
