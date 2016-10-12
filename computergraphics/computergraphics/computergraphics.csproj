@@ -55,7 +55,6 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="src\framework\AssetPath.cs" />
     <Compile Include="src\framework\Scene.cs" />
-    <Compile Include="src\exercises\Exercise1.cs" />
     <Compile Include="src\Application.cs" />
     <Compile Include="src\projects\bsp\BspNode.cs" />
     <Compile Include="src\projects\bsp\BspScene.cs" />
@@ -119,7 +118,6 @@
   <ItemGroup>
     <Folder Include="src\" />
     <Folder Include="src\framework\" />
-    <Folder Include="src\exercises\" />
     <Folder Include="src\projects\" />
     <Folder Include="src\projects\island\" />
     <Folder Include="src\datastructures\" />

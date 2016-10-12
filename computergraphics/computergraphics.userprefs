@@ -1,9 +1,9 @@
 ﻿<Properties StartupConfiguration="{60A7FE4B-6CA2-4FCA-8DDF-505652A1658F}|Default">
-  <MonoDevelop.Ide.Workbench ActiveDocument="computergraphics/src/scenegraph/PointCloudNode.cs">
+  <MonoDevelop.Ide.Workbench ActiveDocument="computergraphics/src/projects/pointcloud/PointCloudScene.cs">
     <Files>
       <File FileName="computergraphics/src/datastructures/pointcloud/PointCloud.cs" Line="32" Column="4" />
-      <File FileName="computergraphics/src/scenegraph/PointCloudNode.cs" Line="40" Column="10" />
-      <File FileName="computergraphics/src/projects/pointcloud/PointCloudScene.cs" Line="23" Column="29" />
+      <File FileName="computergraphics/src/scenegraph/PointCloudNode.cs" Line="8" Column="22" />
+      <File FileName="computergraphics/src/projects/pointcloud/PointCloudScene.cs" Line="17" Column="33" />
       <File FileName="computergraphics/src/Application.cs" Line="10" Column="37" />
     </Files>
   </MonoDevelop.Ide.Workbench>
