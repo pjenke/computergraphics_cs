@@ -8,11 +8,20 @@ namespace computergraphics
     {
 
         private List<Core> coreList = new List<Core>();
-        private Vector3 pos = new Vector3(0, 0, 0);
+        private Vector3 gravity = new Vector3(0, 0, 0);
+        private float h = 0;
 
-        public CoreCloud(Vector3 position)
+        public CoreCloud(Vector3 g)
         {
-            pos = position;
+            gravity = g;
+        }
+
+        internal List<Core> CoreList
+        {
+            get
+            {
+                return coreList;
+            }
         }
 
         public void Add(Core core)
