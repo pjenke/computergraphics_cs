@@ -8,10 +8,11 @@ namespace computergraphics
 {
     class Core : LeafNode
     {
-
+  
         private float viscosity = 0, mass = 0, density = 0, pressure = 0;
         private VertexBufferObject vbo = new VertexBufferObject();
         private Vector3 position = new Vector3(0, 0, 0), velocity = new Vector3(0,0,0);
+        List<RenderVertex> point;
 
         public float Viscosity
         {
@@ -34,6 +35,11 @@ namespace computergraphics
             get
             {
                 return density;
+            }
+
+            set
+            {
+                density = value;
             }
         }
 
@@ -64,6 +70,11 @@ namespace computergraphics
             {
                 return velocity;
             }
+
+            set
+            {
+                velocity = value;
+            }
         }
 
         public Core(Vector3 pos, float vis, float m, float d, float p, Vector3 vel)
@@ -74,14 +85,24 @@ namespace computergraphics
             pressure = p;
             velocity = vel;
             position = pos;
-            List<RenderVertex> point = new List<RenderVertex>();
+            point = new List<RenderVertex>();
             point.Add(new RenderVertex(position,position.Normalized(),Color4.Aquamarine));
             vbo.Setup(point, PrimitiveType.Points);
         }
 
         public override void DrawGL(RenderMode mode, Matrix4 modelMatrix)
         {
-            GL.PointSize(3);
+            point.RemoveAt(0);
+            if ((position + velocity).Y >= 0)
+                position.Y += velocity.Y;
+            if ((position + velocity).X <= 1 && (position + velocity).X >= 0)
+                position.X += velocity.X;
+            if ((position + velocity).Z <= 1 && (position + velocity).Z >= 0)
+                position.Z += velocity.Z;
+            point.Add(new RenderVertex(position, position.Normalized(), Color4.Aquamarine));
+            vbo = new VertexBufferObject();
+            vbo.Setup(point, PrimitiveType.Points);
+            GL.PointSize(5);
             vbo.Draw();
         }
 
@@ -97,6 +118,11 @@ namespace computergraphics
         public override string ToString()
         {
             return position.ToString();
+        }
+
+        public bool Equals(Core c)
+        {
+            return c.position == this.position;
         }
     }
 }

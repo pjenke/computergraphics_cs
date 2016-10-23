@@ -11,9 +11,26 @@ namespace computergraphics
         private Vector3 gravity = new Vector3(0, 0, 0);
         private float h = 0;
 
-        public CoreCloud(Vector3 g)
+        public CoreCloud(Vector3 g, float h)
         {
             gravity = g;
+            this.h = h;
+        }
+
+        public Vector3 Gravity
+        {
+            get
+            {
+                return gravity;
+            }
+        }
+
+        public float H
+        {
+            get
+            {
+                return h;
+            }
         }
 
         internal List<Core> CoreList
