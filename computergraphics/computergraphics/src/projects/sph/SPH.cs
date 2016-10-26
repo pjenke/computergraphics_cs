@@ -9,7 +9,7 @@ namespace computergraphics
 
         private CoreCloud coreC;
 
-        public SPH(CoreCloud coreCloud)
+        public SPH(ref CoreCloud coreCloud)
         {
             this.coreC = coreCloud;
         }
@@ -20,16 +20,37 @@ namespace computergraphics
             Vector3 pressure = new Vector3(0,0,0), viscosity = new Vector3(0,0,0), velocity = new Vector3(0,0,0);
             while (true)
             {
-                foreach (Core c in coreC.CoreList)
-                {
-                    density = CalcDensity(coreC.CoreList, c, coreC.H);
-                    c.Density = density;
-                    pressure = CalcPressure(coreC.CoreList, c, coreC.H);
-                    viscosity = CalcViscosity(coreC.CoreList, c, coreC.H);
-                    velocity = coreC.Gravity - pressure + viscosity;
-                    c.Velocity = velocity;
+                    foreach (Core c in coreC.CoreList)
+                    {
+                        density = CalcDensity(coreC.CoreList, c, coreC.H);
+                        c.Pressure = density - c.RestingDensity;
+                        c.Density = density;
+                        pressure = CalcPressure(coreC.CoreList, c, coreC.H);
+                        viscosity = CalcViscosity(coreC.CoreList, c, coreC.H);
+                        velocity = coreC.Gravity - pressure + viscosity;
+                        Boolean x = false, y = false, z = false;
+                        if (c.Position.Y + velocity.Y >= 0 && c.Position.Y + velocity.Y <= 2)
+                            y = true;
+                        if (c.Position.X + velocity.X <= 1 && c.Position.X + velocity.X >= 0)
+                            x = true;
+                        if (c.Position.Z + velocity.Z <= 1 && c.Position.Z + velocity.Z >= 0)
+                            z = true;
+                        if (x && y && z)
+                            c.Position += velocity;
+                        else if (!x && y && z)
+                            c.Position += new Vector3(0, velocity.Y, velocity.Z);
+                        else if (x && !y && z)
+                            c.Position += new Vector3(velocity.X, 0, velocity.Z);
+                        else if (x && y && !z)
+                            c.Position += new Vector3(velocity.X, velocity.Y, 0);
+                        else if (!x && !y && z)
+                            c.Position += new Vector3(0, 0, velocity.Z);
+                        else if (x && !y && !z)
+                            c.Position += new Vector3(velocity.X, 0, 0);
+                        else if (!x && y && !z)
+                            c.Position += new Vector3(0, velocity.Y, 0);
+                    } 
                 }
-            }
         }
 
         public float CalcDensity(List<Core> coreL, Core core, float h)
@@ -79,7 +100,7 @@ namespace computergraphics
                     z += (float)(c.Mass * ((c.Velocity.Z - core.Velocity.Z) / c.Density) * (45 / (Math.PI * Math.Pow(h, 6)))
                          * (h - r.Length));
                 }
-            }
+            } 
             if (core.Density != 0)
             {
                 x = x * (core.Viscosity / core.Density);

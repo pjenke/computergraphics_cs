@@ -9,7 +9,7 @@ namespace computergraphics
     class Core : LeafNode
     {
   
-        private float viscosity = 0, mass = 0, density = 0, pressure = 0;
+        private float viscosity = 0, mass = 0, density = 0, pressure = 0, restingDensity = 0;
         private VertexBufferObject vbo = new VertexBufferObject();
         private Vector3 position = new Vector3(0, 0, 0), velocity = new Vector3(0,0,0);
         List<RenderVertex> point;
@@ -49,6 +49,11 @@ namespace computergraphics
             {
                 return pressure;
             }
+
+            set
+            {
+                pressure = value;
+            }
         }
 
         public Vector3 Position
@@ -70,10 +75,13 @@ namespace computergraphics
             {
                 return velocity;
             }
+        }
 
-            set
+        public float RestingDensity
+        {
+            get
             {
-                velocity = value;
+                return restingDensity;
             }
         }
 
@@ -82,6 +90,7 @@ namespace computergraphics
             viscosity = vis;
             mass = m;
             density = d;
+            restingDensity = d;
             pressure = p;
             velocity = vel;
             position = pos;
@@ -93,16 +102,10 @@ namespace computergraphics
         public override void DrawGL(RenderMode mode, Matrix4 modelMatrix)
         {
             point.RemoveAt(0);
-            if ((position + velocity).Y >= 0)
-                position.Y += velocity.Y;
-            if ((position + velocity).X <= 1 && (position + velocity).X >= 0)
-                position.X += velocity.X;
-            if ((position + velocity).Z <= 1 && (position + velocity).Z >= 0)
-                position.Z += velocity.Z;
             point.Add(new RenderVertex(position, position.Normalized(), Color4.Aquamarine));
             vbo = new VertexBufferObject();
             vbo.Setup(point, PrimitiveType.Points);
-            GL.PointSize(5);
+            GL.PointSize(3);
             vbo.Draw();
         }
 

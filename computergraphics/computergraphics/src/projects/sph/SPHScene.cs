@@ -7,7 +7,7 @@ namespace computergraphics
 {
     class SPHScene : Scene
     {
-        private const float PARTICLE_COUNT = 1000, VISCOSITY = 0.01f, MASS = 0.01f, DENSITY = 0.01f, PRESSURE = 0.01f, RADIUS = 1, H = 0.5f;
+        private const float PARTICLE_COUNT = 500, VISCOSITY = 0.1f, MASS = 0.1f, DENSITY = 0.001f, PRESSURE = 0, RADIUS = 1, H = 0.2f;
         private Vector3 velocity = new Vector3(0, 0, 0), gravity = new Vector3(0,-0.1f,0);
 
         public SPHScene() : base(100, Shader.ShaderMode.PHONG, RenderMode.REGULAR)
@@ -20,14 +20,14 @@ namespace computergraphics
             cloud = new CoreCloud(gravity, H);
             for (int i = 0; i < PARTICLE_COUNT; i++)
             { 
-                core = new Core(new Vector3(rand.Next(1,100)*0.01f, rand.Next(1, 100) * 0.01f, rand.Next(1, 100) * 0.01f), VISCOSITY, MASS, DENSITY, PRESSURE, velocity);
+                core = new Core(new Vector3(rand.Next(1,50)*0.01f, rand.Next(1, 50) * 0.01f, rand.Next(1, 50) * 0.01f), VISCOSITY, MASS, DENSITY, PRESSURE, velocity);
                 if (!cloud.CoreList.Contains(core))
                 {
                     cloud.Add(core);
                     GetRoot().AddChild(core);
                 } else { i--; }
             }
-            SPH sph = new SPH(cloud);
+            SPH sph = new SPH(ref cloud);
             Thread calcThread = new Thread(sph.StartCalc);
             calcThread.Start();            
         }
