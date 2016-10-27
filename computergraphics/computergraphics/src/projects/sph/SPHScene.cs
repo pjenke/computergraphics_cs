@@ -18,7 +18,7 @@ namespace computergraphics
             CoreCloud cloud;
             Core core;
             cloud = new CoreCloud(gravity, H);
-            for (int i = 0; i < PARTICLE_COUNT; i++)
+            /* for (int i = 0; i < PARTICLE_COUNT; i++)
             { 
                 core = new Core(new Vector3(rand.Next(1,50)*0.01f, rand.Next(1, 50) * 0.01f, rand.Next(1, 50) * 0.01f), VISCOSITY, MASS, DENSITY, PRESSURE, velocity);
                 if (!cloud.CoreList.Contains(core))
@@ -26,6 +26,18 @@ namespace computergraphics
                     cloud.Add(core);
                     GetRoot().AddChild(core);
                 } else { i--; }
+            } */
+            for(float x = 0.4f; x < 0.6f; x += 0.04f)
+            {
+                for(float y = 0.4f; y < 0.9f; y += 0.04f)
+                {
+                    for(float z = 0.4f; z < 0.6f; z += 0.04f)
+                    {
+                        core = new Core(new Vector3(x, y, z), VISCOSITY, MASS, DENSITY, PRESSURE, velocity);
+                        cloud.Add(core);
+                        GetRoot().AddChild(core);
+                    }
+                }
             }
             SPH sph = new SPH(ref cloud);
             Thread calcThread = new Thread(sph.StartCalc);
