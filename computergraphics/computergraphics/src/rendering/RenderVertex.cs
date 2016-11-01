@@ -33,6 +33,7 @@ namespace computergraphics
 		public Vector3 Position
 		{
 			get { return position; }
+			set { position = value; }
 		}
 
 		public Vector3 Normal
