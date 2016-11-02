@@ -106,6 +106,7 @@ namespace computergraphics
             vbo = new VertexBufferObject();
             vbo.Setup(point, PrimitiveType.Points);
             GL.PointSize(3);
+            Console.Out.WriteLine(position);
             vbo.Draw();
         }
 
