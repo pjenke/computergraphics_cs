@@ -14,6 +14,14 @@ namespace computergraphics
 		 * */
 		private List<RenderVertex> renderVertices = null;
 
+		private bool isDynamic = false;
+
+		private float[] vertices = null;
+		private float[] normals = null;
+		private float[] colors = null;
+		private float[] texCoords = null;
+		private int[] indices;
+
 		/**
 		 * Buffer indicides.
 		 * */
@@ -24,8 +32,16 @@ namespace computergraphics
 		 * */
 		private PrimitiveType primitiveType = PrimitiveType.Triangles;
 
-		public VertexBufferObject()
+		public VertexBufferObject() : this(false)
 		{
+		}
+
+		/**
+		 * Use this constructor, if the VBO is dynamic 
+		 */
+		public VertexBufferObject(bool isDynamic)
+		{
+			this.isDynamic = isDynamic;
 		}
 
 		/**
@@ -35,6 +51,11 @@ namespace computergraphics
 		{
 			this.renderVertices = renderVertices;
 			this.primitiveType = primitiveType;
+			vertices = new float[renderVertices.Count * 3];
+			normals = new float[renderVertices.Count * 3];
+			colors = new float[renderVertices.Count * 4];
+			texCoords = new float[renderVertices.Count * 2];
+			indices = new int[renderVertices.Count];
 		}
 
 		/**
@@ -48,8 +69,13 @@ namespace computergraphics
 				return;
 			}
 
+			BufferUsageHint bufferUsageHint = BufferUsageHint.StaticDraw;
+			if (isDynamic)
+			{
+				bufferUsageHint = BufferUsageHint.StreamDraw;
+			}
+
 			// Vertices
-			float[] vertices = new float[renderVertices.Count * 3];
 			for (int i = 0; i < renderVertices.Count; i++)
 			{
 				vertices[i * 3] = renderVertices[i].Position.X;
@@ -58,10 +84,9 @@ namespace computergraphics
 			}
 			GL.GenBuffers(1, out vertexBufferId);
 			GL.BindBuffer(BufferTarget.ArrayBuffer, vertexBufferId);
-			GL.BufferData(BufferTarget.ArrayBuffer, new IntPtr(vertices.Length * sizeof(float)), vertices, BufferUsageHint.StaticDraw);
+			GL.BufferData(BufferTarget.ArrayBuffer, new IntPtr(vertices.Length * sizeof(float)), vertices, bufferUsageHint);
 
 			// Normals
-			float[] normals = new float[renderVertices.Count * 3];
 			for (int i = 0; i < renderVertices.Count; i++)
 			{
 				normals[i * 3] = renderVertices[i].Normal.X;
@@ -70,10 +95,9 @@ namespace computergraphics
 			}
 			GL.GenBuffers(1, out normalBufferId);
 			GL.BindBuffer(BufferTarget.ArrayBuffer, normalBufferId);
-			GL.BufferData(BufferTarget.ArrayBuffer, new IntPtr(normals.Length * sizeof(float)), normals, BufferUsageHint.StaticDraw);
+			GL.BufferData(BufferTarget.ArrayBuffer, new IntPtr(normals.Length * sizeof(float)), normals, bufferUsageHint);
 
 			// Colors
-			float[] colors = new float[renderVertices.Count * 4];
 			for (int i = 0; i < renderVertices.Count; i++)
 			{
 				colors[i * 4] = renderVertices[i].Color.R;
@@ -83,10 +107,9 @@ namespace computergraphics
 			}
 			GL.GenBuffers(1, out colorBufferId);
 			GL.BindBuffer(BufferTarget.ArrayBuffer, colorBufferId);
-			GL.BufferData(BufferTarget.ArrayBuffer, new IntPtr(colors.Length * sizeof(float)), colors, BufferUsageHint.StaticDraw);
+			GL.BufferData(BufferTarget.ArrayBuffer, new IntPtr(colors.Length * sizeof(float)), colors, bufferUsageHint);
 
 			// Texture coordinates
-			float[] texCoords = new float[renderVertices.Count * 2];
 			for (int i = 0; i < renderVertices.Count; i++)
 			{
 				texCoords[i * 2] = renderVertices[i].TexCoords.X;
@@ -94,17 +117,16 @@ namespace computergraphics
 			}
 			GL.GenBuffers(1, out texCoordBufferId);
 			GL.BindBuffer(BufferTarget.ArrayBuffer, texCoordBufferId);
-			GL.BufferData(BufferTarget.ArrayBuffer, new IntPtr(texCoords.Length * sizeof(float)), texCoords, BufferUsageHint.StaticDraw);
+			GL.BufferData(BufferTarget.ArrayBuffer, new IntPtr(texCoords.Length * sizeof(float)), texCoords, bufferUsageHint);
 
 			// Indices
-			int[] indices = new int[renderVertices.Count];
 			for (int i = 0; i < renderVertices.Count; i++)
 			{
 				indices[i] = i;
 			}
 			GL.GenBuffers(1, out indexBufferId);
 			GL.BindBuffer(BufferTarget.ArrayBuffer, indexBufferId);
-			GL.BufferData(BufferTarget.ArrayBuffer, new IntPtr(indices.Length * sizeof(int)), indices, BufferUsageHint.StaticDraw);
+			GL.BufferData(BufferTarget.ArrayBuffer, new IntPtr(indices.Length * sizeof(int)), indices, bufferUsageHint);
 
 			Shader.CheckError();
 		}

@@ -30,5 +30,10 @@ namespace computergraphics
 		{
 			return points[index];
 		}
+
+		public void Set(int index, Vector3 p)
+		{
+			points[index] = p;
+		}
 	}
 }
