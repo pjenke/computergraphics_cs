@@ -7,8 +7,8 @@
 	{
 		public static void Main()
 		{
-			//Scene scene = new SPHScene(); 
-			Scene scene = new PointCloudScene();
+			Scene scene = new SPHScene(); 
+			//Scene scene = new PointCloudScene();
 			OpenTKWindow window = new OpenTKWindow(scene);
 			window.Run ();
 		}

@@ -1,6 +1,8 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 2012
+# Visual Studio 14
+VisualStudioVersion = 14.0.25420.1
+MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "computergraphics", "computergraphics\computergraphics.csproj", "{60A7FE4B-6CA2-4FCA-8DDF-505652A1658F}"
 EndProject
 Global
@@ -13,5 +15,8 @@ Global
 		{60A7FE4B-6CA2-4FCA-8DDF-505652A1658F}.Debug|x86.Build.0 = Debug|x86
 		{60A7FE4B-6CA2-4FCA-8DDF-505652A1658F}.Release|x86.ActiveCfg = Release|x86
 		{60A7FE4B-6CA2-4FCA-8DDF-505652A1658F}.Release|x86.Build.0 = Release|x86
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
 	EndGlobalSection
 EndGlobal

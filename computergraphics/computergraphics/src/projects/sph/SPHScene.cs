@@ -7,7 +7,7 @@ namespace computergraphics
 {
     class SPHScene : Scene
     {
-        private const float PARTICLE_COUNT = 500, VISCOSITY = 0.001f, MASS = 0.1f, DENSITY = 0.001f, PRESSURE = 0, RADIUS = 1, H = 0.1f;
+        private const float PARTICLE_COUNT = 500, VISCOSITY = 0.1f, MASS = 0.1f, DENSITY = 0.001f, PRESSURE = 0, RADIUS = 1, H = 0.0999999f;
         private Vector3 velocity = new Vector3(0, 0, 0), gravity = new Vector3(0,-0.1f,0);
 
         public SPHScene() : base(100, Shader.ShaderMode.PHONG, RenderMode.REGULAR)
@@ -29,7 +29,7 @@ namespace computergraphics
             } */
             for(float x = 0.4f; x < 0.6f; x += 0.04f)
             {
-                for(float y = 0.4f; y < 1.2f; y += 0.04f)
+                for(float y = 0.4f; y < 1.6f; y += 0.04f)
                 {
                     for(float z = 0.4f; z < 0.6f; z += 0.04f)
                     {

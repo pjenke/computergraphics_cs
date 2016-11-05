@@ -101,12 +101,9 @@ namespace computergraphics
 
         public override void DrawGL(RenderMode mode, Matrix4 modelMatrix)
         {
-            point.RemoveAt(0);
-            point.Add(new RenderVertex(position, position.Normalized(), Color4.Aquamarine));
-            vbo = new VertexBufferObject();
-            vbo.Setup(point, PrimitiveType.Points);
+            point[0].Position = position;
+            vbo.Invalidate();
             GL.PointSize(3);
-            Console.Out.WriteLine(position);
             vbo.Draw();
         }
 
