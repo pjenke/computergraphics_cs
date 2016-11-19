@@ -1,34 +1,28 @@
-﻿using System;
-using System.Collections.Generic;
-using OpenTK;
-using OpenTK.Graphics;
-using OpenTK.Graphics.OpenGL;
-
-namespace computergraphics
+﻿namespace computergraphics
 {
-    class Core : LeafNode
+    using System.Collections.Generic;
+
+    using OpenTK;
+    using OpenTK.Graphics;
+    using OpenTK.Graphics.OpenGL;
+
+    public class Core
     {
-  
-        private float viscosity = 0, mass = 0, density = 0, pressure = 0, restingDensity = 0;
-        private VertexBufferObject vbo = new VertexBufferObject();
-        private Vector3 position = new Vector3(0, 0, 0), velocity = new Vector3(0,0,0);
-        List<RenderVertex> point;
+        private readonly List<RenderVertex> point;
 
-        public float Viscosity
-        {
-            get
-            {
-                return viscosity;
-            }
-        }
+        private readonly float viscosity;
 
-        public float Mass
-        {
-            get
-            {
-                return mass;
-            }
-        }
+        private readonly float mass;
+
+        private readonly Vector3 velocity;
+
+        private float density, pressure;
+
+        private Vector3 position;
+
+        public float Viscosity => viscosity;
+
+        public float Mass => mass;
 
         public float Density
         {
@@ -69,51 +63,20 @@ namespace computergraphics
             }
         }
 
-        public Vector3 Velocity
-        {
-            get
-            {
-                return velocity;
-            }
-        }
+        public Vector3 Velocity => velocity;
 
-        public float RestingDensity
-        {
-            get
-            {
-                return restingDensity;
-            }
-        }
+        public float RestingDensity { get; }
 
         public Core(Vector3 pos, float vis, float m, float d, float p, Vector3 vel)
         {
             viscosity = vis;
             mass = m;
             density = d;
-            restingDensity = d;
+            RestingDensity = d;
             pressure = p;
             velocity = vel;
             position = pos;
-            point = new List<RenderVertex>();
-            point.Add(new RenderVertex(position,position.Normalized(),Color4.Aquamarine));
-            vbo.Setup(point, PrimitiveType.Points);
-        }
-
-        public override void DrawGL(RenderMode mode, Matrix4 modelMatrix)
-        {
-            point[0].Position = position;
-            vbo.Invalidate();
-            GL.PointSize(3);
-            vbo.Draw();
-        }
-
-        public override void TimerTick(int counter)
-        {
-        }
-
-        public Core Clone()
-        {
-            return new Core(position, viscosity, mass, density, pressure, velocity);
+            point = new List<RenderVertex> { new RenderVertex(position, position.Normalized(), Color4.Aquamarine) };
         }
 
         public override string ToString()

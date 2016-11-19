@@ -1,50 +1,61 @@
-﻿using System.Collections.Generic;
-using OpenTK;
-
-namespace computergraphics
+﻿namespace computergraphics.projects.sph
 {
+    using System.Collections.Generic;
+    using System.Linq;
 
-    class CoreCloud
+    using OpenTK;
+    using OpenTK.Graphics;
+    using OpenTK.Graphics.OpenGL;
+
+    public class CoreCloud : LeafNode
     {
+        private readonly VertexBufferObject _vbo;
 
-        private List<Core> coreList = new List<Core>();
-        private Vector3 gravity = new Vector3(0, 0, 0);
-        private float h = 0;
+        private List<RenderVertex> _renderVertices;
 
-        public CoreCloud(Vector3 g, float h)
+        public CoreCloud(Vector3 g, float h, List<Core> cores)
         {
-            gravity = g;
-            this.h = h;
+            Cores = cores;
+            Gravity = g;
+            H = h;
+            _renderVertices = new List<RenderVertex>();
+            _vbo = new VertexBufferObject();
+
+            Initialize();
         }
 
-        public Vector3 Gravity
+        private void Initialize()
         {
-            get
+            foreach (var core in Cores)
             {
-                return gravity;
+                _renderVertices.Add(new RenderVertex(core.Position, Vector3.UnitY, Color4.MediumPurple));
             }
+
+            _vbo.Setup(_renderVertices, PrimitiveType.Points);
         }
 
-        public float H
+        public Vector3 Gravity { get; }
+
+        public float H { get; }
+
+        public List<Core> Cores { get; }
+       
+        public override void TimerTick(int counter)
         {
-            get
-            {
-                return h;
-            }
+            _renderVertices = _renderVertices.Zip(Cores, (vertex, core) => UpdateVertexPosition(vertex, core.Position)).ToList();
+            _vbo.Invalidate();
         }
 
-        internal List<Core> CoreList
+        private RenderVertex UpdateVertexPosition(RenderVertex renderVertex, Vector3 newPosition)
         {
-            get
-            {
-                return coreList;
-            }
+            renderVertex.Position = newPosition;
+            return renderVertex;
         }
 
-        public void Add(Core core)
+        public override void DrawGL(RenderMode mode, Matrix4 modelMatrix)
         {
-            coreList.Add(core);
+            GL.PointSize(5);
+            _vbo.Draw();
         }
-
     }
 }
