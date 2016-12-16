@@ -80,6 +80,8 @@
     <Compile Include="src\datastructures\pointcloud\PointCloud.cs" />
     <Compile Include="src\projects\sph\Core.cs" />
     <Compile Include="src\projects\sph\CoreCloud.cs" />
+    <Compile Include="src\projects\sph\Datastructures\Position.cs" />
+    <Compile Include="src\projects\sph\Datastructures\RasterUnit.cs" />
     <Compile Include="src\projects\sph\SPH.cs" />
     <Compile Include="src\projects\sph\SPHScene.cs" />
     <Compile Include="src\scenegraph\Camera.cs" />

@@ -4,51 +4,20 @@
 
     using OpenTK;
     using OpenTK.Graphics;
-    using OpenTK.Graphics.OpenGL;
 
     public class Core
     {
         private readonly List<RenderVertex> point;
 
-        private readonly float viscosity;
-
         private readonly float mass;
 
-        private readonly Vector3 velocity;
-
-        private float density, pressure;
+        private Vector3 velocity;
 
         private Vector3 position;
 
-        public float Viscosity => viscosity;
-
         public float Mass => mass;
 
-        public float Density
-        {
-            get
-            {
-                return density;
-            }
-
-            set
-            {
-                density = value;
-            }
-        }
-
-        public float Pressure
-        {
-            get
-            {
-                return pressure;
-            }
-
-            set
-            {
-                pressure = value;
-            }
-        }
+        public Color4 _Color = Color4.Aqua;
 
         public Vector3 Position
         {
@@ -63,17 +32,24 @@
             }
         }
 
-        public Vector3 Velocity => velocity;
+        public Vector3 Velocity
+        {
+            get
+            {
+                return velocity;
+            }
+
+            set
+            {
+                velocity = value;
+            }
+        }
 
         public float RestingDensity { get; }
 
-        public Core(Vector3 pos, float vis, float m, float d, float p, Vector3 vel)
+        public Core(Vector3 pos, float m, Vector3 vel)
         {
-            viscosity = vis;
             mass = m;
-            density = d;
-            RestingDensity = d;
-            pressure = p;
             velocity = vel;
             position = pos;
             point = new List<RenderVertex> { new RenderVertex(position, position.Normalized(), Color4.Aquamarine) };
@@ -84,9 +60,16 @@
             return position.ToString();
         }
 
-        public bool Equals(Core c)
+        public override bool Equals(object obj)
         {
-            return c.position == this.position;
+            var other = obj as Core;
+
+            return other?.position == position;
+        }
+
+        public override int GetHashCode()
+        {
+            return Position.GetHashCode();
         }
     }
 }

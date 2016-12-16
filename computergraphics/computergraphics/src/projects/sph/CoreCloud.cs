@@ -13,8 +13,9 @@
 
         private List<RenderVertex> _renderVertices;
 
-        public CoreCloud(Vector3 g, float h, List<Core> cores)
+        public CoreCloud(Vector3 g, float h, List<Core> cores, float vis)
         {
+            _Viscosity = vis;
             Cores = cores;
             Gravity = g;
             H = h;
@@ -39,22 +40,25 @@
         public float H { get; }
 
         public List<Core> Cores { get; }
-       
+
+        public float Viscosity { get; }
+
         public override void TimerTick(int counter)
         {
-            _renderVertices = _renderVertices.Zip(Cores, (vertex, core) => UpdateVertexPosition(vertex, core.Position)).ToList();
+            _renderVertices = _renderVertices.Zip(Cores, (vertex, core) => UpdateVertex(vertex, core)).ToList();
             _vbo.Invalidate();
         }
 
-        private RenderVertex UpdateVertexPosition(RenderVertex renderVertex, Vector3 newPosition)
+        private RenderVertex UpdateVertex(RenderVertex renderVertex, Core core)
         {
-            renderVertex.Position = newPosition;
+            renderVertex.Position = core.Position;
+            renderVertex.Color = core._Color;
             return renderVertex;
         }
 
         public override void DrawGL(RenderMode mode, Matrix4 modelMatrix)
         {
-            GL.PointSize(5);
+            GL.PointSize(3);
             _vbo.Draw();
         }
     }

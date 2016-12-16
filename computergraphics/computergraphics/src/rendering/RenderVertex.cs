@@ -44,6 +44,7 @@ namespace computergraphics
 		public Color4 Color
 		{
 			get { return color; }
+            set { color = value; }
 		}
 
 		public Vector2 TexCoords
