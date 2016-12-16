@@ -15,7 +15,7 @@
 
         public CoreCloud(Vector3 g, float h, List<Core> cores, float vis)
         {
-            _Viscosity = vis;
+            Viscosity = vis;
             Cores = cores;
             Gravity = g;
             H = h;
