@@ -13,10 +13,11 @@
 
     public class Sph
     {
-        private const int RefreshRate = 5,
-                          CubeSizeX = 1,
-                          CubeSizeY = 2,
-                          CubeSizeZ = 1;
+        private const int RefreshRate = 5;
+        
+        private const float CubeSizeX = 0.4f,
+                            CubeSizeY = 2f,
+                            CubeSizeZ = 0.4f;
 
         private readonly CoreCloud _coreCloud;
 
@@ -38,7 +39,7 @@
 
         private readonly double _ViscosityMagic;
 
-        private const float _StepSize = 0.01f, k = 0.00000002f, sigma = 0.01f;
+        private const float _StepSize = 0.00001f, k = 0.000005f, _Bouncy = 5;
 
         public Sph(CoreCloud coreCloud)
         {
@@ -105,10 +106,18 @@
                     coresToCheck.AddRange(neighborCores);
 
                     var density = CalculateDensity(coresToCheck, core, _coreCloud.H);
-
+                    core.Density = density;
                     float pressure = k * (density - _RestingDensity);
-                    var pressureTask = Task.Run(() => CalculatePressure(coresToCheck, core, _coreCloud.H, pressure, density));
-                    var viscosityTask = Task.Run(() => CalculateViscosity(coresToCheck, core, _coreCloud.H, density));
+                    core.Pressure = pressure;
+                }
+                foreach (var core in _coreCloud.Cores)
+                {
+                    var rasterUnit = FindRasterUnitForCore(core);
+                    var neighborCores = rasterUnit.Neighbors.SelectMany(unit => unit.Cores);
+                    var coresToCheck = new List<Core>(rasterUnit.Cores);
+                    coresToCheck.AddRange(neighborCores);
+                    var pressureTask = Task.Run(() => CalculatePressure(coresToCheck, core, _coreCloud.H, core.Pressure, core.Density));
+                    var viscosityTask = Task.Run(() => CalculateViscosity(coresToCheck, core, _coreCloud.H, core.Density));
                     viscosityTask.Wait();
                     pressureTask.Wait();
 
@@ -116,49 +125,34 @@
 
                     bool x = false, y = false, z = false;
 
-                    if (core.Position.Y + _StepSize * velocity.Y >= 0 && core.Position.Y + _StepSize * velocity.Y <= CubeSizeY)
+                    if (core.Position.Y + core.Velocity.Y + _StepSize * velocity.Y >= 0 && core.Position.Y + core.Velocity.Y + _StepSize * velocity.Y <= CubeSizeY)
                         y = true;
-                    if (core.Position.X + _StepSize * velocity.X <= CubeSizeX && core.Position.X + _StepSize * velocity.X >= 0)
+                    if (core.Position.X + core.Velocity.X + _StepSize * velocity.X <= CubeSizeX && core.Position.X + core.Velocity.X + _StepSize * velocity.X >= 0)
                         x = true;
-                    if (core.Position.Z + _StepSize * velocity.Z <= CubeSizeZ && core.Position.Z + _StepSize * velocity.Z >= 0)
+                    if (core.Position.Z + core.Velocity.Z + _StepSize * velocity.Z <= CubeSizeZ && core.Position.Z + core.Velocity.Z + _StepSize * velocity.Z >= 0)
                         z = true;
 
-                    if (!x && y && z)
+                    if (!x)
                     {
-                        //velocity.X = -velocity.X;
-                        velocity.X = 0;
+                        var tmp = core.Velocity;
+                        tmp.X = -tmp.X / _Bouncy;
+                        core.Velocity = tmp;
                     }
-                    else if (x && !y && z)
+                    if (!y)
                     {
-                        //velocity.Y = -velocity.Y;
-                        velocity.Y = 0;
+                        var tmp = core.Velocity;
+                        tmp.Y = -tmp.Y / _Bouncy;
+                        core.Velocity = tmp;
                     }
-                    else if (x && y)
+                    if (!z)
                     {
-                        //velocity.Z = -velocity.Z;
-                        velocity.Z = 0;
+                        var tmp = core.Velocity;
+                        tmp.Z = -tmp.Z / _Bouncy;
+                        core.Velocity = tmp;
                     }
-                    else if (!x && !y && z)
-                    {
-                        //velocity.X = -velocity.X;
-                        //velocity.Y = -velocity.Y;
-                        velocity.X = 0;
-                        velocity.Y = 0;
-                    }
-                    else if (x)
-                    {
-                        //velocity.Y = -velocity.Y;
-                        //velocity.Z = -velocity.Z;
-                        velocity.Y = 0;
-                        velocity.Z = 0;
-                    }
-                    else
-                    {
-                        //velocity = -velocity;
-                        velocity = Vector3.Zero;
-                    }
-                    core.Velocity = _StepSize * velocity;
-                    core.Position += _StepSize * velocity;
+                    core.Velocity += _StepSize * velocity;
+                    core.SetPosition(core.Position + core.Velocity);
+                    core.Position += core.Velocity;
                 }
                 i++;
             }
@@ -171,7 +165,7 @@
             {
                 var r = core.Position - c.Position;
                 if (!c.Equals(core))
-                    result += (float)(c.Mass * _DensityMagic * Math.Pow(h * h - r.LengthSquared, 3));
+                    result += c.Mass * W(r,h);
             }
             return result;
         }
@@ -181,11 +175,10 @@
             var result = new Vector3();
             foreach (var c in cores)
             {
-                var r = core.Position - c.Position;
+                Vector3 r = core.Position - c.Position;
                 if (!c.Equals(core))
                 {
-                    result += (float)(c.Mass * (pressure / (2 * density) + pressure / (2 * density))
-                              * _PressureMagic * W(r.Length,h) * W(r.Length, h)) * (r / r.Length);
+                    result += c.Mass * (core.Pressure + c.Pressure) / (2 * c.Density) * WPress(r, h) * (r / r.Length);
                 }
             }
             return result;
@@ -199,10 +192,10 @@
                 var r = core.Position - c.Position;
                 if (!c.Equals(core))
                 {
-                    result += (float)(c.Mass * _ViscosityMagic * W(r.Length, h)) * ((c.Velocity - core.Velocity) / density);
+                    result += c.Mass * (c.Velocity - core.Velocity) / c.Density * WVis(r,h);
                 }
             }
-            result = result * (_coreCloud.Viscosity / density);
+            result = result * _coreCloud.Viscosity;
             return result;
         }
 
@@ -239,14 +232,32 @@
             }
         }
 
-        private float W(float length, float h)
+        private float W(Vector3 r, float h)
         {
-            if (length / h >= 0 && length / h <= 1)
-                //return sigma / (4 * h) * (4 - 6 * length * length + 3 * length * length * length);
-                return 2 * h - length;
-            else if (length / h >= 1 && length / h <= 2)
-                //return sigma / (4 * h) * ((2 - length) * (2 - length) * (2 - length));
-                return 2 * h - length;
+            if (r.Length == h)
+                return 0;
+            if (0 <= r.Length && r.Length <= h)
+                return (float)(315 / (64 * Math.PI * Math.Pow(h,9)) * (Math.Pow(h * h - r.Length * r.Length, 3)));
+            else
+                return 0;
+        }
+
+        private float WPress(Vector3 r, float h)
+        {
+            if (r.Length == h)
+                return 0;
+            if (0 <= r.Length && r.Length <= h)
+                return (float)(15 / (Math.PI * Math.Pow(h, 6)) * Math.Pow(h - r.Length, 3));
+            else
+                return 0;
+        }
+
+        private float WVis(Vector3 r, float h)
+        {
+            if (r == Vector3.Zero)
+                return (float)(45 / (Math.PI * Math.Pow(h, 6)) * h);
+            if (0 <= r.Length && r.Length <= h)
+                return (float)(15 / (2 * Math.PI) - (r.Length * r.Length * r.Length) / (2 * h * h * h) + (r.Length * r.Length) / (h * h) + h / (2 * r.Length) - 1);
             else
                 return 0;
         }

@@ -17,7 +17,17 @@
 
         public float Mass => mass;
 
+        private SphereNode sphere;
+
         public Color4 _Color = Color4.Aqua;
+
+        private float density;
+
+        private float pressure;
+
+        private RootNode root;
+
+        private TranslationNode tNode;
 
         public Vector3 Position
         {
@@ -47,11 +57,50 @@
 
         public float RestingDensity { get; }
 
-        public Core(Vector3 pos, float m, Vector3 vel)
+        public float Density
+        {
+            get
+            {
+                return density;
+            }
+
+            set
+            {
+                density = value;
+            }
+        }
+
+        public float Pressure
+        {
+            get
+            {
+                return pressure;
+            }
+
+            set
+            {
+                pressure = value;
+            }
+        }
+
+        public SphereNode Sphere
+        {
+            get
+            {
+                return sphere;
+            }
+        }
+
+        public Core(Vector3 pos, float m, Vector3 vel,RootNode r)
         {
             mass = m;
+            root = r;
             velocity = vel;
             position = pos;
+            sphere = new SphereNode(0.05f,20);
+            tNode = new TranslationNode(position);
+            root.AddChild(tNode);
+            tNode.AddChild(sphere);
             point = new List<RenderVertex> { new RenderVertex(position, position.Normalized(), Color4.Aquamarine) };
         }
 
@@ -67,9 +116,9 @@
             return other?.position == position;
         }
 
-        public override int GetHashCode()
+        public void SetPosition(Vector3 pos)
         {
-            return Position.GetHashCode();
+            tNode.Translation = pos;
         }
     }
 }
