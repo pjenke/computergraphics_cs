@@ -12,13 +12,11 @@
     {
         private const float ParticleCount = 500;
 
-        private const float H = 0.09f;
+        private const float H = 0.08f;
 
         private const float Viscosity = 10f;
 
-        private const float Mass = 100f;
-
-        private const float Density = 1000f;
+        private const float Mass = 18.01528f;
 
         private readonly Vector3 _gravity = new Vector3(0, -50f, 0);
 
@@ -34,7 +32,8 @@
 
             var cloud = new CoreCloud(_gravity, H, cores, Viscosity);
 
-            var sph = new Sph(cloud);
+            var container = new CubeNode(2f);
+            var sph = new Sph(cloud, container);
             var calcThread = new Thread(sph.StartCalculation);
             calcThread.Start();
         }

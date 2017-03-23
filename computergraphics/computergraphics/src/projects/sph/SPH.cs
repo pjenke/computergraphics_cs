@@ -31,30 +31,30 @@
 
         private readonly int _cubeNumY;
 
-        private readonly float _RestingDensity;
+        private readonly float _restingDensity;
 
-        private readonly double _DensityMagic;
+        private float _lambda;
 
-        private readonly double _PressureMagic;
+        private readonly float _WMagic, _WPresMagic;
 
-        private readonly double _ViscosityMagic;
+        private const float _StepSize = 0.00001f, k = 0.00002f, _Bouncy = 3;
 
-        private const float _StepSize = 0.00001f, k = 0.000005f, _Bouncy = 5;
+        private readonly LeafNode _container;
 
-        public Sph(CoreCloud coreCloud)
+        public Sph(CoreCloud coreCloud, LeafNode container)
         {
+            _container = container;
             _coreCloud = coreCloud;
             _coreList = coreCloud.Cores;
             var cubeSize = _coreCloud.H * 2;
             var hPow9 = Math.Pow(coreCloud.H, 9);
             var hPow6 = Math.Pow(coreCloud.H, 6);
-            _DensityMagic = 315 / (64 * Math.PI * hPow9);
-            _PressureMagic = (-45 / (Math.PI * hPow6));
-            _ViscosityMagic = (45 / (Math.PI * hPow6));
-            _RestingDensity = (float)(_coreList[0].Mass * _DensityMagic * Math.Pow(_coreCloud.H * _coreCloud.H, 3)) / 2;
             _cubeNumZ = (int)(CubeSizeZ / cubeSize);
             _cubeNumX = (int)(CubeSizeX / cubeSize);
             _cubeNumY = (int)(CubeSizeY / cubeSize);
+            _WMagic = (float)(315 / (64 * Math.PI * Math.Pow(coreCloud.H , 9)));
+            _WPresMagic = (float)(15 / (Math.PI * Math.Pow(coreCloud.H, 6)));
+            _restingDensity = (float)(_coreList[0].Mass * _WMagic * Math.Pow((coreCloud.H * coreCloud.H - coreCloud.H/2 * coreCloud.H/2),3));
             _raster = new List<RasterUnit>();
             Initialize();
         }
@@ -107,7 +107,7 @@
 
                     var density = CalculateDensity(coresToCheck, core, _coreCloud.H);
                     core.Density = density;
-                    float pressure = k * (density - _RestingDensity);
+                    float pressure = k * (density - _restingDensity);
                     core.Pressure = pressure;
                 }
                 foreach (var core in _coreCloud.Cores)
@@ -122,35 +122,17 @@
                     pressureTask.Wait();
 
                     var velocity = _coreCloud.Gravity - pressureTask.Result + viscosityTask.Result;
-
-                    bool x = false, y = false, z = false;
-
-                    if (core.Position.Y + core.Velocity.Y + _StepSize * velocity.Y >= 0 && core.Position.Y + core.Velocity.Y + _StepSize * velocity.Y <= CubeSizeY)
-                        y = true;
-                    if (core.Position.X + core.Velocity.X + _StepSize * velocity.X <= CubeSizeX && core.Position.X + core.Velocity.X + _StepSize * velocity.X >= 0)
-                        x = true;
-                    if (core.Position.Z + core.Velocity.Z + _StepSize * velocity.Z <= CubeSizeZ && core.Position.Z + core.Velocity.Z + _StepSize * velocity.Z >= 0)
-                        z = true;
-
-                    if (!x)
-                    {
-                        var tmp = core.Velocity;
-                        tmp.X = -tmp.X / _Bouncy;
-                        core.Velocity = tmp;
-                    }
-                    if (!y)
-                    {
-                        var tmp = core.Velocity;
-                        tmp.Y = -tmp.Y / _Bouncy;
-                        core.Velocity = tmp;
-                    }
-                    if (!z)
-                    {
-                        var tmp = core.Velocity;
-                        tmp.Z = -tmp.Z / _Bouncy;
-                        core.Velocity = tmp;
-                    }
                     core.Velocity += _StepSize * velocity;
+
+                    for(int l = 0; l < (_container.Triangles.Count / 3); l++)
+                    {
+                        bool cut = PlainVertices(_container.Triangles[i], _container.Triangles[i+1], _container.Triangles[i+2], core.Position, core.Velocity);
+                        if(cut)
+                        {
+
+                        }
+                    }
+
                     core.SetPosition(core.Position + core.Velocity);
                     core.Position += core.Velocity;
                 }
@@ -160,12 +142,12 @@
 
         private float CalculateDensity(List<Core> coreL, Core core, float h)
         {
-            var result = _RestingDensity;
+            var result = _restingDensity;
             foreach (Core c in coreL)
             {
                 var r = core.Position - c.Position;
                 if (!c.Equals(core))
-                    result += c.Mass * W(r,h);
+                    result += (float)(c.Mass * W(r,h));
             }
             return result;
         }
@@ -176,7 +158,7 @@
             foreach (var c in cores)
             {
                 Vector3 r = core.Position - c.Position;
-                if (!c.Equals(core))
+                if (!c.Equals(core) && r.Length != 0)
                 {
                     result += c.Mass * (core.Pressure + c.Pressure) / (2 * c.Density) * WPress(r, h) * (r / r.Length);
                 }
@@ -196,6 +178,37 @@
                 }
             }
             result = result * _coreCloud.Viscosity;
+            return result;
+        }
+
+        private bool PlainVertices(Vector3 p1, Vector3 p2, Vector3 p3, Vector3 sPoint, Vector3 sDirection)
+        {
+            return PlainCrossed(CrossProduct(p2 - p1, p3 - p1), sPoint, sDirection, p1);
+        }
+
+        private bool PlainCrossed(Vector3 n, Vector3 sPoint, Vector3 sDirection, Vector3 a)
+        {
+            if (VectorMult(n, sDirection) == 0)
+                return false;
+            _lambda = -VectorMult(n,sPoint) / VectorMult(n,sDirection) + VectorMult(n,a);
+            Vector3 sPointcPoint = _lambda * sDirection;
+            if (_lambda <= 1)
+                if (_lambda >= 0)
+                    return true;
+            return false;
+        }
+
+        private float VectorMult(Vector3 v1, Vector3 v2)
+        {
+            return v1.X * v2.X + v1.Y * v2.Y + v1.Z * v2.Z;
+        }
+
+        private Vector3 CrossProduct(Vector3 v1, Vector3 v2)
+        {
+            Vector3 result = new Vector3();
+            result.X = v1.Y * v2.Z - v1.Z * v2.Y;
+            result.Y = v1.Z * v2.X - v1.X * v2.Z;
+            result.Z = v1.X * v2.Y - v1.Y * v2.X;
             return result;
         }
 
@@ -237,7 +250,7 @@
             if (r.Length == h)
                 return 0;
             if (0 <= r.Length && r.Length <= h)
-                return (float)(315 / (64 * Math.PI * Math.Pow(h,9)) * (Math.Pow(h * h - r.Length * r.Length, 3)));
+                return (float)(_WMagic * (Math.Pow(h * h - r.Length * r.Length, 3)));
             else
                 return 0;
         }
@@ -247,17 +260,15 @@
             if (r.Length == h)
                 return 0;
             if (0 <= r.Length && r.Length <= h)
-                return (float)(15 / (Math.PI * Math.Pow(h, 6)) * Math.Pow(h - r.Length, 3));
+                return (float)(_WPresMagic * Math.Pow(h - r.Length, 3));
             else
                 return 0;
         }
 
         private float WVis(Vector3 r, float h)
         {
-            if (r == Vector3.Zero)
-                return (float)(45 / (Math.PI * Math.Pow(h, 6)) * h);
             if (0 <= r.Length && r.Length <= h)
-                return (float)(15 / (2 * Math.PI) - (r.Length * r.Length * r.Length) / (2 * h * h * h) + (r.Length * r.Length) / (h * h) + h / (2 * r.Length) - 1);
+                return (float)(15 / (2 * Math.PI * h * h * h) - (r.Length * r.Length * r.Length) / (2 * h * h * h) + (r.Length * r.Length) / (h * h) + h / (2 * r.Length) - 1);
             else
                 return 0;
         }

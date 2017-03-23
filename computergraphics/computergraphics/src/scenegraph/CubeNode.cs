@@ -16,9 +16,11 @@ namespace computergraphics
 		 * */
 		private float sideLength;
 
+        private List<RenderVertex> renderVertices;
+
 		private VertexBufferObject vbo = new VertexBufferObject();
 
-		public CubeNode(float sideLength)
+        public CubeNode(float sideLength)
 		{
 			this.sideLength = sideLength;
 			CreateVBO();
@@ -38,7 +40,7 @@ namespace computergraphics
 
 		void CreateVBO()
 		{
-			List<RenderVertex> renderVertices = new List<RenderVertex>();
+            renderVertices = new List<RenderVertex>();
 
 			Vector3 p0 = new Vector3(-sideLength, -sideLength, -sideLength);
 			Vector3 p1 = new Vector3(sideLength, -sideLength, -sideLength);
