@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using OpenTK.Graphics;
 using OpenTK.Graphics.OpenGL;
+using System;
 
 namespace computergraphics
 {
@@ -58,13 +59,18 @@ namespace computergraphics
 			this.rootNode = rootNode;
 			this.points = points;
 
-			vboPoints.Setup(CreateVBOPoints(), PrimitiveType.Points);
+            vboPoints.Setup(CreateVBOPoints(), PrimitiveType.Points);
 			vboBack2FrontPath.Setup(CreateVBOBack2Front(), PrimitiveType.LineStrip);
 			vboPlanes.Setup(CreateVBOPlanes(rootNode, 0.7f), PrimitiveType.Lines);
 			vboElements.Setup(CreateVBOElements(rootNode), PrimitiveType.Lines);
 		}
 
-		public override void DrawGL(RenderMode mode, Matrix4 modelMatrix)
+        public override void UpdateTriangles(Vector3 p1, Vector3 p2, Vector3 p3)
+        {
+            
+        }
+
+        public override void DrawGL(RenderMode mode, Matrix4 modelMatrix)
 		{
 			if (mode == RenderMode.REGULAR)
 			{

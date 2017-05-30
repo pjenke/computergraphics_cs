@@ -10,14 +10,14 @@
     using OpenTK;
     using System.Threading.Tasks;
     using OpenTK.Graphics;
-
+    
     public class Sph
     {
         private const int RefreshRate = 5;
         
-        private const float CubeSizeX = 0.4f,
+        private const float CubeSizeX = 2f,
                             CubeSizeY = 2f,
-                            CubeSizeZ = 0.4f;
+                            CubeSizeZ = 2f;
 
         private readonly CoreCloud _coreCloud;
 
@@ -35,14 +35,21 @@
 
         private float _lambda;
 
-        private readonly float _WMagic, _WPresMagic;
+        private Vector3 _normal;
 
-        private const float _StepSize = 0.00001f, k = 0.00002f, _Bouncy = 3;
+        private readonly float _WMagic, _WPresMagic, _WVisMagic;
+
+        private readonly String _Path = @"C:\Users\Maxi\Source\Repos\computergraphics_cs\Save.txt";
+
+        private const float _StepSize = 0.001f, k = 0.06f;
 
         private readonly LeafNode _container;
 
-        public Sph(CoreCloud coreCloud, LeafNode container)
+        private bool _saveCalc = false;
+
+        public Sph(CoreCloud coreCloud, LeafNode container, bool save)
         {
+            _saveCalc = save;
             _container = container;
             _coreCloud = coreCloud;
             _coreList = coreCloud.Cores;
@@ -53,10 +60,17 @@
             _cubeNumX = (int)(CubeSizeX / cubeSize);
             _cubeNumY = (int)(CubeSizeY / cubeSize);
             _WMagic = (float)(315 / (64 * Math.PI * Math.Pow(coreCloud.H , 9)));
-            _WPresMagic = (float)(15 / (Math.PI * Math.Pow(coreCloud.H, 6)));
-            _restingDensity = (float)(_coreList[0].Mass * _WMagic * Math.Pow((coreCloud.H * coreCloud.H - coreCloud.H/2 * coreCloud.H/2),3));
+            _WPresMagic = (float)(-45 / (Math.PI * Math.Pow(coreCloud.H, 6)));
+            _WVisMagic = (float)(45 / (Math.PI * Math.Pow(coreCloud.H, 6)));
+            _restingDensity = _coreList[0].Mass;
             _raster = new List<RasterUnit>();
             Initialize();
+            if (_saveCalc)
+            {
+                if (System.IO.File.Exists(_Path))
+                    System.IO.File.Delete(_Path);
+                System.IO.File.AppendAllLines(_Path, new string[] {coreCloud.Cores.Count.ToString()});
+            }
         }
 
         private void Initialize()
@@ -122,22 +136,152 @@
                     pressureTask.Wait();
 
                     var velocity = _coreCloud.Gravity - pressureTask.Result + viscosityTask.Result;
-                    core.Velocity += _StepSize * velocity;
-
-                    for(int l = 0; l < (_container.Triangles.Count / 3); l++)
+                    core.Velocity += velocity;
+                    float lengthLeft = 1f, lambda = 2f;
+                    Vector3 strahl = _StepSize * core.Velocity, pos = core.Position, normal = Vector3.Zero;
+                    bool cut = false;
+                    do
                     {
-                        bool cut = PlainVertices(_container.Triangles[i], _container.Triangles[i+1], _container.Triangles[i+2], core.Position, core.Velocity);
+                        cut = ContainerCut(pos, strahl * lengthLeft);
+                        lambda = _lambda;
+                        normal = _normal;
                         if(cut)
                         {
-
+                            if(lambda != 0)
+                            {
+                                lengthLeft -= (lengthLeft / 100) * (lambda * 100);
+                                Vector3 newPos = pos + strahl * lambda;
+                                Vector3 newStrahl = (2 * ((strahl * -1) * (normal * -1)) * (normal * -1) - (strahl * -1)) * lengthLeft;
+                                bool secCut = ContainerCut(newPos, newStrahl);
+                                if (_lambda == 0)
+                                    secCut = false;
+                                if (secCut)
+                                {
+                                    pos = newPos;
+                                    strahl = (2 * ((strahl * -1) * (normal * -1)) * (normal * -1) - (strahl * -1));
+                                }
+                                else if(InBoundCheck(newPos + newStrahl))
+                                {
+                                    pos = newPos;
+                                    strahl = (2 * ((strahl * -1) * (normal * -1)) * (normal * -1) - (strahl * -1));
+                                }
+                                else if(InBoundCheck((pos + strahl * lambda) + (strahl * -1 * lengthLeft)))
+                                {
+                                    pos = pos + strahl * lambda;
+                                    strahl *= -1;
+                                }
+                                else if (InBoundCheck(pos + new Vector3(strahl.X, 0, strahl.Z) * lengthLeft))
+                                {
+                                    strahl = new Vector3(strahl.X, 0, strahl.Z);
+                                }
+                                else
+                                {
+                                    pos = pos + strahl * lambda;
+                                    strahl = Vector3.Zero;
+                                }
+                            }
+                            else
+                            {
+                                cut = false;
+                                if (InBoundCheck(pos + strahl * lengthLeft))
+                                {
+                                    
+                                }
+                                else if(InBoundCheck(pos + (2 * (strahl * (normal * -1)) * (normal * -1) - strahl) * lengthLeft))
+                                { 
+                                    strahl = (2 * (strahl * (normal * -1)) * (normal * -1) - strahl);
+                                }
+                                else if(InBoundCheck(pos + new Vector3(strahl.X, 0, strahl.Z) * lengthLeft))
+                                {
+                                    strahl = new Vector3(strahl.X, 0, strahl.Z);
+                                }
+                                else
+                                {
+                                    strahl = Vector3.Zero;
+                                }
+                            }
                         }
+                    } while (cut);
+
+                    if (InBoundCheck(pos + strahl * lengthLeft))
+                    {
+                        core.SetPosition(pos + strahl * lengthLeft);
+                        core.Position = pos + strahl * lengthLeft;
+                        core.Velocity = strahl / _StepSize;
+                    }
+                    else if (InBoundCheck(pos + (strahl * -1) * lengthLeft))
+                    {
+                        core.SetPosition(pos + (strahl * -1) * lengthLeft);
+                        core.Position = pos + (strahl * -1) * lengthLeft;
+                        core.Velocity = strahl / _StepSize * -1;
+                    }
+                    else if(InBoundCheck(pos + new Vector3(strahl.X,0,strahl.Z) * lengthLeft))
+                    {
+                        core.SetPosition(pos + new Vector3(strahl.X, 0, strahl.Z) * lengthLeft);
+                        core.Position = pos + new Vector3(strahl.X, 0, strahl.Z) * lengthLeft;
+                        core.Velocity = new Vector3(strahl.X / _StepSize, 0, strahl.Z / _StepSize);
+                    }
+                    else
+                    {
+                        core.Velocity = Vector3.Zero;
                     }
 
-                    core.SetPosition(core.Position + core.Velocity);
-                    core.Position += core.Velocity;
+                    if (_saveCalc)
+                    {
+                        string[] write = new string[] { core.Position.X.ToString(), core.Position.Y.ToString(), core.Position.Z.ToString()};
+                        System.IO.File.AppendAllLines(_Path, write);
+                    }
                 }
                 i++;
             }
+        }
+
+        private bool ContainerCut(Vector3 pos, Vector3 strahl)
+        {
+            Vector3 tmpNormal = Vector3.Zero;
+            float tmpLambda = 2f;
+            for (int l = 0; l < (_container.Triangles.Count / 3); l++)
+            {
+                bool cut = PlainVertices(_container.Triangles[3 * l], _container.Triangles[3 * l + 1], _container.Triangles[3 * l + 2], pos, strahl);
+                if (cut)
+                {
+                    if (_lambda != 0)
+                    {
+                        if (tmpLambda > _lambda || tmpLambda == 0)
+                        {
+                            tmpLambda = _lambda;
+                            tmpNormal = _normal;
+                        }
+                    }
+                    else
+                    {
+                        if (tmpLambda == 2)
+                        {
+                            tmpLambda = _lambda;
+                            tmpNormal = _normal;
+                        }
+                    }
+                }
+            }
+            if(tmpLambda != 2)
+            {
+                _lambda = tmpLambda;
+                _normal = tmpNormal;
+                return true;
+            }
+            return false;
+        }
+
+        private bool InBoundCheck(Vector3 pos)
+        {
+            for(int i = 0; i < _container.Triangles.Count / 3; i++)
+            {
+                Vector3 normal = Vector3.Cross(_container.Triangles[i * 3 + 1] - _container.Triangles[i * 3], _container.Triangles[i * 3 + 2] - _container.Triangles[i * 3]).Normalized();
+                float oob = VectorMult(pos, normal) - VectorMult(normal, _container.Triangles[i * 3]);
+                if (oob < 0)
+                    return false;
+            }
+            return true;
         }
 
         private float CalculateDensity(List<Core> coreL, Core core, float h)
@@ -146,8 +290,7 @@
             foreach (Core c in coreL)
             {
                 var r = core.Position - c.Position;
-                if (!c.Equals(core))
-                    result += (float)(c.Mass * W(r,h));
+                result += (float)(c.Mass * W(r,h));
             }
             return result;
         }
@@ -160,7 +303,7 @@
                 Vector3 r = core.Position - c.Position;
                 if (!c.Equals(core) && r.Length != 0)
                 {
-                    result += c.Mass * (core.Pressure + c.Pressure) / (2 * c.Density) * WPress(r, h) * (r / r.Length);
+                    result += c.Mass * (core.Pressure + c.Pressure) / (core.Density * core.Density + c.Density * c.Density) * WPress(r, h) * r.Normalized();
                 }
             }
             return result;
@@ -174,42 +317,35 @@
                 var r = core.Position - c.Position;
                 if (!c.Equals(core))
                 {
-                    result += c.Mass * (c.Velocity - core.Velocity) / c.Density * WVis(r,h);
+                    result += c.Mass * ((c.Velocity - core.Velocity) / c.Density) * WVis(r,h);
                 }
             }
-            result = result * _coreCloud.Viscosity;
+            result = result * (_coreCloud.Viscosity / core.Density);
             return result;
         }
 
         private bool PlainVertices(Vector3 p1, Vector3 p2, Vector3 p3, Vector3 sPoint, Vector3 sDirection)
         {
-            return PlainCrossed(CrossProduct(p2 - p1, p3 - p1), sPoint, sDirection, p1);
+            return PlainCrossed(Vector3.Cross(p3 - p1, p2 - p1).Normalized(), sPoint, sDirection, p1);
         }
 
         private bool PlainCrossed(Vector3 n, Vector3 sPoint, Vector3 sDirection, Vector3 a)
         {
             if (VectorMult(n, sDirection) == 0)
                 return false;
-            _lambda = -VectorMult(n,sPoint) / VectorMult(n,sDirection) + VectorMult(n,a);
-            Vector3 sPointcPoint = _lambda * sDirection;
+            _lambda = (-VectorMult(n,sPoint) + VectorMult(n,a)) / VectorMult(n, sDirection);
             if (_lambda <= 1)
                 if (_lambda >= 0)
+                {
+                    _normal = n;
                     return true;
+                }
             return false;
         }
 
         private float VectorMult(Vector3 v1, Vector3 v2)
         {
             return v1.X * v2.X + v1.Y * v2.Y + v1.Z * v2.Z;
-        }
-
-        private Vector3 CrossProduct(Vector3 v1, Vector3 v2)
-        {
-            Vector3 result = new Vector3();
-            result.X = v1.Y * v2.Z - v1.Z * v2.Y;
-            result.Y = v1.Z * v2.X - v1.X * v2.Z;
-            result.Z = v1.X * v2.Y - v1.Y * v2.X;
-            return result;
         }
 
         private void RefreshList()
@@ -260,7 +396,7 @@
             if (r.Length == h)
                 return 0;
             if (0 <= r.Length && r.Length <= h)
-                return (float)(_WPresMagic * Math.Pow(h - r.Length, 3));
+                return (float)(_WPresMagic * Math.Pow(h - r.Length, 2));
             else
                 return 0;
         }
@@ -268,7 +404,7 @@
         private float WVis(Vector3 r, float h)
         {
             if (0 <= r.Length && r.Length <= h)
-                return (float)(15 / (2 * Math.PI * h * h * h) - (r.Length * r.Length * r.Length) / (2 * h * h * h) + (r.Length * r.Length) / (h * h) + h / (2 * r.Length) - 1);
+                return (float)(_WVisMagic * (h - r.Length));
             else
                 return 0;
         }

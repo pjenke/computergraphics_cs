@@ -97,7 +97,7 @@
             root = r;
             velocity = vel;
             position = pos;
-            sphere = new SphereNode(0.05f,20);
+            sphere = new SphereNode(0.05f,10);
             tNode = new TranslationNode(position);
             root.AddChild(tNode);
             tNode.AddChild(sphere);

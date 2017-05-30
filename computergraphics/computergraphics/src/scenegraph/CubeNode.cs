@@ -22,7 +22,7 @@ namespace computergraphics
 
         public CubeNode(float sideLength)
 		{
-			this.sideLength = sideLength;
+            this.sideLength = sideLength;
 			CreateVBO();
 		}
 
@@ -69,16 +69,25 @@ namespace computergraphics
 			vbo.Setup(renderVertices, PrimitiveType.Quads);
 		}
 
-		/**
+        public override void UpdateTriangles(Vector3 p1, Vector3 p2, Vector3 p3)
+        {
+            Triangles.Add(p1);
+            Triangles.Add(p2);
+            Triangles.Add(p3);
+        }
+
+        /**
 		 * Add 4 vertices to the render list.
 		 * */
-		private void AddSideVertices(List<RenderVertex> renderVertices, Vector3 p0, Vector3 p1, Vector3 p2, Vector3 p3, Vector3 normal, Color4 color)
+        private void AddSideVertices(List<RenderVertex> renderVertices, Vector3 p0, Vector3 p1, Vector3 p2, Vector3 p3, Vector3 normal, Color4 color)
 		{
 			renderVertices.Add(new RenderVertex(p3, normal, color));
 			renderVertices.Add(new RenderVertex(p2, normal, color));
 			renderVertices.Add(new RenderVertex(p1, normal, color));
 			renderVertices.Add(new RenderVertex(p0, normal, color));
-		}
+            UpdateTriangles(p0, p1, p2);
+            UpdateTriangles(p0, p2, p3);
+        }
 	}
 }
 

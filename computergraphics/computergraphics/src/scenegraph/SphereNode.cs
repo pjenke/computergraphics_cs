@@ -16,19 +16,27 @@ namespace computergraphics
 		 * */
 		private float radius;
 
-		/**
+        /**
 		 * Resolution of the sphere tesselation 
 		 * */
-		private int resolution;
+        private int resolution;
 
-		/**
+        /**
 		 * Vertex buffer object for the sphere
 		*/
-		private VertexBufferObject vbo = new VertexBufferObject();
+        private VertexBufferObject vbo = new VertexBufferObject();
 
-		public SphereNode(float radius, int resolution)
+        public float Radius
+        {
+            get
+            {
+                return radius;
+            }
+        }
+
+        public SphereNode(float radius, int resolution)
 		{
-			this.radius = radius;
+            this.radius = radius;
 			this.resolution = resolution;
 			CreateVBO();
 		}
@@ -41,7 +49,14 @@ namespace computergraphics
 			}
 		}
 
-		public override void TimerTick(int counter)
+        public override void UpdateTriangles(Vector3 p1, Vector3 p2, Vector3 p3)
+        {
+            Triangles.Add(p1);
+            Triangles.Add(p2);
+            Triangles.Add(p3);
+        }
+
+        public override void TimerTick(int counter)
 		{
 		}
 
@@ -92,7 +107,9 @@ namespace computergraphics
 			renderVertices.Add(new RenderVertex(p2, normal, color));
 			renderVertices.Add(new RenderVertex(p1, normal, color));
 			renderVertices.Add(new RenderVertex(p0, normal, color));
-		}
+            UpdateTriangles(p0, p1, p2);
+            UpdateTriangles(p0, p1, p3);
+        }
 	}
 }
 

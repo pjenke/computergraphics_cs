@@ -21,6 +21,7 @@
     <WarningLevel>4</WarningLevel>
     <Externalconsole>true</Externalconsole>
     <PlatformTarget>x86</PlatformTarget>
+    <UseVSHostingProcess>true</UseVSHostingProcess>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
     <DebugType>full</DebugType>
@@ -82,6 +83,7 @@
     <Compile Include="src\projects\sph\CoreCloud.cs" />
     <Compile Include="src\projects\sph\Datastructures\Position.cs" />
     <Compile Include="src\projects\sph\Datastructures\RasterUnit.cs" />
+    <Compile Include="src\projects\sph\LoadFile.cs" />
     <Compile Include="src\projects\sph\SPH.cs" />
     <Compile Include="src\projects\sph\SPHScene.cs" />
     <Compile Include="src\scenegraph\Camera.cs" />

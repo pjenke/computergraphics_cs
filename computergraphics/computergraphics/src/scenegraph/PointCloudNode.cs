@@ -17,7 +17,7 @@ namespace computergraphics
 
 		public PointCloudNode(PointCloud pc)
 		{
-			this.pc = pc;
+            this.pc = pc;
 			renderVertices = new List<RenderVertex>();
 			CreateVBO();
 		}
@@ -54,7 +54,11 @@ namespace computergraphics
 		{
 		}
 
-		public void updateVBO()
+        public override void UpdateTriangles(Vector3 p1, Vector3 p2, Vector3 p3)
+        {
+        }
+
+        public void updateVBO()
 		{
 			if (renderVertices.Count != pc.Count)
 			{

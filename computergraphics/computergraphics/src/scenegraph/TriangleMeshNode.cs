@@ -2,6 +2,7 @@
 using OpenTK.Graphics;
 using OpenTK.Graphics.OpenGL;
 using System.Collections.Generic;
+using System;
 
 namespace computergraphics
 {
@@ -61,7 +62,11 @@ namespace computergraphics
 			get { return mesh; }
 		}
 
-		public bool ShowNormals
+        public override void UpdateTriangles(Vector3 p1, Vector3 p2, Vector3 p3)
+        { 
+        }
+
+        public bool ShowNormals
 		{
 			get { return showNormals; }
 			set { showNormals = value; }
